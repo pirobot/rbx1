@@ -1,0 +1,17 @@
+<package>
+  <description brief="rbx1_bringup">
+
+    ROS by Example Vol 1 Startup Package
+
+  </description>
+  <author>Patrick Goebel</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rbx1_bringup</url>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs" />
+
+</package>
+
+

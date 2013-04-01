@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<robot name="turtlebot_head_arm"
+    xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+    xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+    xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface">
+
+    <!-- Included URDF Files -->
+    <include filename="$(find rbx1_description)/urdf/turtlebot.xacro" />
+    <include filename="$(find rbx1_description)/urdf/head.xacro" />
+    <include filename="$(find rbx1_description)/urdf/arm.xacro" />
+
+	<!-- Load the main TurtleBot body -->
+    <turtlebot />
+    
+    <!-- Attach the head -->
+    <turtlebot_head parent="plate_3_link" color="white">
+      <origin xyz="-0.09 0 0.075"/>
+    </turtlebot_head>
+    
+    <!-- Attach the arm -->
+    <!--
+    <turtlebot_arm parent="plate_3_link" color="white" gripper_color="green">
+      <origin xyz="0.12 0 0.0508" rpy="0 0 0" />
+    </turtlebot_arm>
+    -->
+</robot>

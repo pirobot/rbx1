@@ -1,0 +1,15 @@
+# This is only a very minimal set of parameters that really should be configured for the kinect.
+# See http://www.ros.org/wiki/openni_camera for more information.
+
+# Note - this is not working in groovy with asus. It may need a different configuration as well.
+
+# Defaults for the frame id's are fine
+rgb_frame_id: /camera_rgb_optical_frame
+depth_frame_id: /camera_depth_optical_frame
+# Configured by launcher args in 3dsensor.launch
+# depth_registration: true
+image_mode: 2
+depth_mode: 2
+# why is this non-zero?
+depth_time_offset: -0.055
+image_time_offset: 0

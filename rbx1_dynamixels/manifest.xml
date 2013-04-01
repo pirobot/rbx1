@@ -1,0 +1,21 @@
+<package>
+  <description brief="rbx1_dynamixels">
+
+    ROS by Example Vol 1 Dynamixels Package
+
+  </description>
+  <author>Patrick Goebel</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rbx1_dynamixels</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="sensor_msgs"/>
+  <depend package="std_msgs"/>
+  <depend package="dynamixel_controllers"/>
+  <depend package="dynamixel_driver"/>
+  <depend package="dynamixel_msgs"/>
+
+</package>
+
+

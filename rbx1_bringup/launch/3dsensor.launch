@@ -1,0 +1,93 @@
+<!-- 
+  Turtlebot is a bit low on horsepower...
+
+  We use openni_camera here, turn everything on by default
+  (allows the user to conveniently see everything when
+  launching this on its own - use with 
+  turtebot_rviz_launchers/view_robot.launch to visualise)
+  and provide args to disable them so you can optimise the
+  horsepower for your application.
+  
+  For an example of disabling processing modules, check
+  any of the turtlebot_core_apps (e.g. android_make_a_map.launch
+  only enables scan_processing for depthimage_to_laserscan and
+  rgb_processing for the android tele-view).
+-->
+<launch>
+  <arg name="camera"  value="camera"/>
+  <arg name="respawn" default="false" />
+  <arg     if="$(arg respawn)" name="bond" value="" />
+  <arg unless="$(arg respawn)" name="bond" value="--no-bond" />
+  <arg name="manager" value="$(arg camera)_nodelet_manager" />
+
+  <!-- Depth registration -->
+  <arg name="depth_registration" default="true"/>
+  <arg     if="$(arg depth_registration)" name="depth" value="depth_registered" />
+  <arg unless="$(arg depth_registration)" name="depth" value="depth" />
+  
+  <!-- Processing Modules -->
+  <arg name="rgb_processing"     default="true"/>
+  <arg name="depth_processing"   default="true"/>
+  <arg name="scan_processing"    default="true"/>
+
+  <group ns="$(arg camera)">
+    <node pkg="nodelet" type="nodelet" name="$(arg manager)" respawn="true" args="manager"/>
+    <node pkg="nodelet" type="nodelet" name="openni_camera_loader" args="load openni_camera/driver $(arg manager)" respawn="true" output="screen">
+        <rosparam file="$(find turtlebot_bringup)/param/3dsensor.yaml" command="load"/>
+        <param name="depth_registration" value="$(arg depth_registration)"/>
+    </node>
+
+    <group if="$(arg rgb_processing)">
+      <include file="$(find image_proc)/launch/image_proc.launch" ns="rgb">
+        <arg name="manager" value="/$(arg camera)/$(arg manager)" /> <!--  Image proc can't seem to resolve if only $(arg manager) is set -->
+        <arg name="respawn" value="$(arg respawn)" />
+      </include>
+    </group>
+
+    <!--                  Depth image processing 
+      Look in $(find openni_launch)/launch/includes/depth.launch for hints
+      Here we set things up for point cloud processing (follower mainly).
+      At some point we may want the xyzrgb point cloud processing nodelet. 
+    -->
+    <group if="$(arg depth_processing)">
+      <node pkg="nodelet" type="nodelet" name="rectify_depth"
+            args="load image_proc/rectify /$(arg camera)/$(arg manager) $(arg bond)"
+            respawn="$(arg respawn)"
+            ns="$(arg depth)" output="screen">
+        <remap from="image_mono"  to="image_raw" />   <!-- Input -->
+        <remap from="image_rect"  to="image_rect_raw" />  <!-- Output -->
+        <!-- Use nearest neighbor (0) interpolation so we don't streak across depth boundaries -->
+        <param name="interpolation" value="0" />
+      </node>
+
+       <!-- XYZ point cloud (optional, disable if publishing XYZRGB instead) -->
+      <node unless="$(arg depth_registration)" pkg="nodelet" type="nodelet" name="points"
+            args="load depth_image_proc/point_cloud_xyz /$(arg camera)/$(arg manager) $(arg bond)"
+            respawn="$(arg respawn)"
+            ns="$(arg depth)" output="screen">
+        <remap from="image_rect" to="image_rect_raw"/>
+      </node>
+      <!-- Instead publish registered XYZRGB point cloud --> 
+      <node if="$(arg depth_registration)" pkg="nodelet" type="nodelet" name="points_xyzrgb"
+            args="load depth_image_proc/point_cloud_xyzrgb /$(arg camera)/$(arg manager) $(arg bond)"
+            respawn="$(arg respawn)" output="screen">
+        <remap from="$(arg depth)/image_rect" to="$(arg depth)/image_rect_raw"/>
+      </node>
+    </group>
+    
+    <!--                        Laserscan 
+      This uses lazy subscribing, so will not activate until scan is requested.
+    -->
+    <group if="$(arg scan_processing)">
+      <node pkg="nodelet" type="nodelet" name="depthimage_to_laserscan_loader" args="load depthimage_to_laserscan/DepthImageToLaserScanNodelet $(arg manager)" output="screen">
+		    <!-- Pixel rows to use to generate the laserscan. For each column, the scan will
+		         return the minimum value for those pixels centered vertically in the image. -->
+		    <param name="scan_height" value="10"/>
+        <param name="output_frame_id" value="/$(arg camera)_depth_frame"/>
+        <param name="range_min" value="0.45"/>
+        <remap from="image" to="/$(arg camera)/$(arg depth)/image_raw"/>
+        <remap from="scan" to="/scan"/>
+      </node>
+    </group>
+  </group>
+</launch>

@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="openni_tracker" name="openni_tracker" type="openni_tracker" output="screen">
+    <param name="tf_prefix" value="skeleton" />
+  </node>
+</launch>

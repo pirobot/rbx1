@@ -1,0 +1,12 @@
+<launch>
+  <!-- Launch the OpenNI drivers -->
+  <include file="$(find rbx1_bringup)/launch/openni_driver.launch" />
+
+  <!-- Run the depthimage_to_laserscan node -->
+  <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
+    <remap from="image" to="/camera/depth_registered/image_rect" />
+    <remap from="camera_info" to="/camera/depth/camera_info" />
+    <remap from="scan" to="/scan" />
+</node>
+
+</launch>

@@ -1,0 +1,18 @@
+<package>
+  <description brief="rbx1_speech">
+
+     ROS by Example Vol 1 Speech Package
+
+  </description>
+  <author>Patrick Goebel</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rbx1_speech</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="pocketsphinx"/>
+  <depend package="sound_play"/>
+  <depend package="std_msgs"/>
+</package>
+
+

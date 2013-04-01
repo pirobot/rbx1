@@ -1,0 +1,17 @@
+<package>
+  <description brief="rbx1_description">
+
+    ROS By Example Vol 1 URDF/Xacro Package
+
+  </description>
+  <author>Patrick Goebel</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rbx1_description</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="urdf"/>
+
+</package>
+
+

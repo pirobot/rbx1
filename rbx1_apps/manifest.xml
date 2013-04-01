@@ -1,0 +1,18 @@
+<package>
+  <description brief="rbx1_apps">
+
+     ROS by Example Vol 1 Apps Package
+
+  </description>
+  <author>Patrick Goebel</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rbx1_apps</url>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="tf"/>
+</package>
+
+

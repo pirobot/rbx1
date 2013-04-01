@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="rbx1_dynamixels" name="head_tracker" type="head_tracker.py" output="screen">
+    <remap from="camera_info" to="/camera/rgb/camera_info" />
+  </node>
+</launch>

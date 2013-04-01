@@ -1,0 +1,16 @@
+<package>
+  <description brief="rbx1_vision">
+
+     ROS by Example Vol 1 Vision Package
+
+  </description>
+  <author>Patrick Goebel</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rbx1_vision</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="cv_bridge"/>
+</package>
+
+

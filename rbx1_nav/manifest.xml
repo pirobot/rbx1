@@ -1,0 +1,24 @@
+<package>
+  <description brief="rbx1_nav">
+
+    ROS by Example Vol 1 Navigation Package
+
+  </description>
+  <author>Patrick Goebel</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rbx1_nav</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="geometry_msgs"/>
+  <depend package="nav_msgs"/>
+  <depend package="move_base_msgs"/>
+  <depend package="visualization_msgs"/>
+  <depend package="tf"/>
+  <depend package="actionlib"/>
+  <depend package="kdl"/>
+  <depend package="dynamic_reconfigure"/>
+
+</package>
+
+

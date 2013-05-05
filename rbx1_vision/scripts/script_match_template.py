@@ -22,7 +22,7 @@ if __name__ == '__main__':
         test_file = sys.argv[2]
     except:
         target_file = "test_images/mona_lisa_face.png"
-        test_file = "test_images/mona_lisa_rotated_45.png"
+        test_file = "test_images/mona_lisa.png"
         
         print help_message
         
@@ -191,7 +191,7 @@ if __name__ == '__main__':
     cv2.imshow("Test Image", image)
     cv2.namedWindow("Correlation", cv.CV_WINDOW_AUTOSIZE)
     cv2.imshow("Correlation", best_result)
-    #cv2.imshow("Best Template", best_template)
+    cv2.imshow("Best Template", best_template)
 
     
     cv.MoveWindow("Template", 10, 10)

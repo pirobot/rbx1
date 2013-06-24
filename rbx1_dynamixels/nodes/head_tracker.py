@@ -140,7 +140,7 @@ class HeadTracker():
                     # If there are exceptions, momentarily stop the head movement by setting
                     # the target pan position to the current position
                     try:
-                        current_pan_position = seself.tilt_speedlf.joint_state.position[self.joint_state.name.index(self.head_pan_joint)]
+                        current_pan_position = self.tilt_speedlf.joint_state.position[self.joint_state.name.index(self.head_pan_joint)]
                         self.set_servo_position(self.head_pan_joint, current_pan_position)
                         rospy.logerr("Servo SetSpeed Exception!")
                         rospy.logerr(sys.exc_info())

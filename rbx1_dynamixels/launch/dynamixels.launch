@@ -43,5 +43,4 @@
    <!-- Start all Dynamixels in the relaxed state -->
    <node pkg="rbx1_dynamixels" type="relax_all_servos.py" name="relax_all_servos" />
 
-k
 </launch>

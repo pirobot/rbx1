@@ -13,7 +13,7 @@
        z_threshold: 0.05
        x_threshold: 0.1
        z_scale: 1.0
-       x_scale: 1.0
+       x_scale: 2.0
        max_rotation_speed: 3.0
        min_rotation_speed: 0.5
        max_linear_speed: 0.4

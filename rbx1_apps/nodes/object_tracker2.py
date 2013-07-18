@@ -47,10 +47,6 @@ class ObjectTracker():
         # The minimum rotation speed in radians per second
         self.min_rotation_speed = rospy.get_param("~min_rotation_speed", 0.5)
         
-        # Sensitivity to target displacements.  Setting this too high
-        # can lead to oscillations of the robot.
-        self.gain = rospy.get_param("~gain", 2.0)
-        
         # The x threshold (% of image width) indicates how far off-center
         # the ROI needs to be in the x-direction before we react
         self.x_threshold = rospy.get_param("~x_threshold", 0.1)
@@ -75,7 +71,7 @@ class ObjectTracker():
         self.z_scale = rospy.get_param("~z_scale", 1.0)
 
         # How much do we weight x-displacement of the person when making a movement        
-        self.x_scale = rospy.get_param("~x_scale", 1.0)
+        self.x_scale = rospy.get_param("~x_scale", 2.0)
         
         # The max linear speed in meters per second
         self.max_linear_speed = rospy.get_param("~max_linear_speed", 0.3)
@@ -166,13 +162,9 @@ class ObjectTracker():
         if abs(percent_offset_x) > self.x_threshold:
             # Set the rotation speed proportional to the displacement of the target
             try:
-                speed = self.gain * percent_offset_x * self.x_scale
-                if speed < 0:
-                    direction = -1
-                else:
-                    direction = 1
-                self.move_cmd.angular.z = -direction * max(self.min_rotation_speed,
-                                            min(self.max_rotation_speed, abs(speed)))
+                speed = percent_offset_x * self.x_scale
+                self.move_cmd.angular.z = -copysign(max(self.min_rotation_speed,
+                                            min(self.max_rotation_speed, abs(speed))), speed)
             except:
                 pass
             
@@ -204,7 +196,7 @@ class ObjectTracker():
             
             if mean_z < self.max_z and (abs(mean_z - self.goal_z) > self.z_threshold):
                 speed = (mean_z - self.goal_z) * self.z_scale
-                self.move_cmd.linear.x = min(self.max_linear_speed, max(self.min_linear_speed, speed))
+                self.move_cmd.linear.x = copysign(min(self.max_linear_speed, max(self.min_linear_speed, abs(speed))), speed)
         except:
             pass
                     

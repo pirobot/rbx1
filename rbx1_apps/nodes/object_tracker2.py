@@ -127,6 +127,7 @@ class ObjectTracker():
         rospy.Subscriber('roi', RegionOfInterest, self.set_cmd_vel)
         
         # Wait until we have an ROI to follow
+        rospy.loginfo("Waiting for an ROI to track...")
         rospy.wait_for_message('roi', RegionOfInterest)
         
         rospy.loginfo("ROI messages detected. Starting tracker...")
@@ -203,8 +204,7 @@ class ObjectTracker():
                     continue
                 else:
                     sum_z = sum_z + z
-                    n_z += 1
-        
+                    n_z += 1   
         try:
             mean_z = sum_z / n_z
             

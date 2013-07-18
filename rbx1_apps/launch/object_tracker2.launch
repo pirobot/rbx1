@@ -12,7 +12,7 @@
        goal_z: 0.6
        z_threshold: 0.05
        x_threshold: 0.1
-       z_scale: 2.0
+       z_scale: 1.0
        x_scale: 1.0
        max_angular_speed: 3.0
        min_angular_speed: 0.5

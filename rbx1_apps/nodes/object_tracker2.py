@@ -77,12 +77,6 @@ class ObjectTracker():
         # How much do we weight x-displacement of the person when making a movement        
         self.x_scale = rospy.get_param("~x_scale", 1.0)
         
-        # The maximum rotation speed in radians per second
-        self.max_angular_speed = rospy.get_param("~max_angular_speed", 2.0)
-        
-        # The minimum rotation speed in radians per second
-        self.min_angular_speed = rospy.get_param("~min_angular_speed", 0.0)
-        
         # The max linear speed in meters per second
         self.max_linear_speed = rospy.get_param("~max_linear_speed", 0.3)
         
@@ -172,13 +166,13 @@ class ObjectTracker():
         if abs(percent_offset_x) > self.x_threshold:
             # Set the rotation speed proportional to the displacement of the target
             try:
-                speed = self.gain * percent_offset_x
+                speed = self.gain * percent_offset_x * self.x_scale
                 if speed < 0:
                     direction = -1
                 else:
                     direction = 1
                 self.move_cmd.angular.z = -direction * max(self.min_rotation_speed,
-                                            min(self.max_rotation_speed, abs(speed))) * self.x_scale
+                                            min(self.max_rotation_speed, abs(speed)))
             except:
                 pass
             
@@ -208,8 +202,9 @@ class ObjectTracker():
         try:
             mean_z = sum_z / n_z
             
-            if mean_z < self.max_z and (abs(mean_z - self.goal_z) > self.z_threshold):     
-                self.move_cmd.linear.x = (mean_z - self.goal_z) * self.z_scale
+            if mean_z < self.max_z and (abs(mean_z - self.goal_z) > self.z_threshold):
+                speed = (mean_z - self.goal_z) * self.z_scale
+                self.move_cmd.linear.x = min(self.max_linear_speed, max(self.min_linear_speed, speed))
         except:
             pass
                     

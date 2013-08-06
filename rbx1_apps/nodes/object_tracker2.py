@@ -100,17 +100,17 @@ class ObjectTracker():
         rospy.loginfo("Waiting for camera_info topic...")
         rospy.wait_for_message('camera_info', CameraInfo)
         
-        # Subscribe the camera_info topic to get the image width and height
+        # Subscribe to the camera_info topic to get the image width and height
         rospy.Subscriber('camera_info', CameraInfo, self.get_camera_info)
 
         # Wait until we actually have the camera data
         while self.image_width == 0 or self.image_height == 0:
             rospy.sleep(1)
                     
-        # Subscribe the the registered depth image
+        # Subscribe to the registered depth image
         rospy.Subscriber("depth_image", Image, self.convert_depth_image)
         
-        # Wait for the pointcloud topic to become available
+        # Wait for the depth image to become available
         rospy.wait_for_message('depth_image', Image)
         
         # Subscribe to the ROI topic and set the callback to update the robot's motion

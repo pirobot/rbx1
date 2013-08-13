@@ -12,7 +12,10 @@
        gf_blockSize: 10
        gf_useHarrisDetector: False
        gf_k: 0.04
+       haar_scaleFactor: 1.3
        haar_minNeighbors: 3
+       haar_minSize: 30
+       haar_maxSize: 150
        feature_size: 1
        show_text: True
     </rosparam>

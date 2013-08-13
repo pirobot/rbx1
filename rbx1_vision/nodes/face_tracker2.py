@@ -64,60 +64,64 @@ class FaceTracker(FaceDetector, LKTracker):
         self.prev_grey = None
         
     def process_image(self, cv_image):
-        # Create a greyscale version of the image
-        self.grey = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-        
-        # Equalize the grey histogram to minimize lighting effects
-        self.grey = cv2.equalizeHist(self.grey)
-        
-        # Step 1: Detect the face if we haven't already
-        if self.detect_box is None:
-            self.keypoints = list()
-            self.track_box = None
-            self.detect_box = self.detect_face(self.grey)
-        else:
-            # Step 2: If we aren't yet tracking keypoints, get them now
-            if not self.track_box or not self.is_rect_nonzero(self.track_box):
-                self.track_box = self.detect_box
-                self.keypoints = self.get_keypoints(self.grey, self.track_box)
-
-            # Store a copy of the current grey image used for LK tracking                   
-            if self.prev_grey is None:
-                self.prev_grey = self.grey           
-              
-            # Step 3: If we have keypoints, track them using optical flow
-            self.track_box = self.track_keypoints(self.grey, self.prev_grey)
-          
-            # Step 4: Drop keypoints that are too far from the main cluster
-            if self.frame_index % self.drop_keypoints_interval == 0 and len(self.keypoints) > 0:
-                ((cog_x, cog_y, cog_z), mse_xy, mse_z, score) = self.drop_keypoints(self.abs_min_keypoints, self.std_err_xy, self.max_mse)
-                
-                if score == -1:
-                    self.detect_box = None
-                    self.track_box = None
-                    return cv_image
-              
-            # Step 5: Add keypoints if the number is getting too low 
-            if self.frame_index % self.add_keypoints_interval == 0 and len(self.keypoints) < self.min_keypoints:
-                self.expand_roi = self.expand_roi_init * self.expand_roi
-                self.add_keypoints(self.track_box)
-            else:
-                self.frame_index += 1
-                self.expand_roi = self.expand_roi_init
-        
-        # Store a copy of the current grey image used for LK tracking            
-        self.prev_grey = self.grey
-          
-        # Process any special keyboard commands for this module
-        if 32 <= self.keystroke and self.keystroke < 128:
-            cc = chr(self.keystroke).lower()
-            if cc == 'c':
-                self.keypoints = []
+        try:
+            # Create a greyscale version of the image
+            self.grey = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+            
+            # Equalize the grey histogram to minimize lighting effects
+            self.grey = cv2.equalizeHist(self.grey)
+            
+            # Step 1: Detect the face if we haven't already
+            if self.detect_box is None:
+                self.keypoints = list()
                 self.track_box = None
-                self.detect_box = None
-            elif cc == 'd':
-                self.show_add_drop = not self.show_add_drop
-        
+                self.detect_box = self.detect_face(self.grey)
+            else:
+                # Step 2: If we aren't yet tracking keypoints, get them now
+                if not self.track_box or not self.is_rect_nonzero(self.track_box):
+                    self.track_box = self.detect_box
+                    self.keypoints = self.get_keypoints(self.grey, self.track_box)
+    
+                # Store a copy of the current grey image used for LK tracking                   
+                if self.prev_grey is None:
+                    self.prev_grey = self.grey           
+                  
+                # Step 3: If we have keypoints, track them using optical flow
+                self.track_box = self.track_keypoints(self.grey, self.prev_grey)
+              
+                # Step 4: Drop keypoints that are too far from the main cluster
+                if self.frame_index % self.drop_keypoints_interval == 0 and len(self.keypoints) > 0:
+                    ((cog_x, cog_y, cog_z), mse_xy, mse_z, score) = self.drop_keypoints(self.abs_min_keypoints, self.std_err_xy, self.max_mse)
+                    
+                    if score == -1:
+                        self.detect_box = None
+                        self.track_box = None
+                        return cv_image
+                  
+                # Step 5: Add keypoints if the number is getting too low 
+                if self.frame_index % self.add_keypoints_interval == 0 and len(self.keypoints) < self.min_keypoints:
+                    self.expand_roi = self.expand_roi_init * self.expand_roi
+                    self.add_keypoints(self.track_box)
+                else:
+                    self.frame_index += 1
+                    self.expand_roi = self.expand_roi_init
+            
+            # Store a copy of the current grey image used for LK tracking            
+            self.prev_grey = self.grey
+              
+            # Process any special keyboard commands for this module
+            if 32 <= self.keystroke and self.keystroke < 128:
+                cc = chr(self.keystroke).lower()
+                if cc == 'c':
+                    self.keypoints = []
+                    self.track_box = None
+                    self.detect_box = None
+                elif cc == 'd':
+                    self.show_add_drop = not self.show_add_drop
+                    
+        except AttributeError:
+            pass
+                    
         return cv_image
     
     def add_keypoints(self, track_box):

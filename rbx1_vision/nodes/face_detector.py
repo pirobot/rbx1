@@ -45,19 +45,19 @@ class FaceDetector(ROS2OpenCV2):
         
         # Set cascade parameters that tend to work well for faces.
         # Can be overridden in launch file
-        self.haar_minSize = rospy.get_param("~haar_minSize", (20, 20))
-        self.haar_maxSize = rospy.get_param("~haar_maxSize", (150, 150))
         self.haar_scaleFactor = rospy.get_param("~haar_scaleFactor", 1.3)
-        self.haar_minNeighbors = rospy.get_param("~haar_minNeighbors", 2)
-        self.haar_flags = rospy.get_param("~haar_flags", cv.CV_HAAR_DO_CANNY_PRUNING)
+        self.haar_minNeighbors = rospy.get_param("~haar_minNeighbors", 3)
+        self.haar_minSize = rospy.get_param("~haar_minSize", 30)
+        self.haar_maxSize = rospy.get_param("~haar_maxSize", 150)
         
         # Store all parameters together for passing to the detector
-        self.haar_params = dict(minSize = self.haar_minSize,
-                                maxSize = self.haar_maxSize,
-                                scaleFactor = self.haar_scaleFactor,
+        self.haar_params = dict(scaleFactor = self.haar_scaleFactor,
                                 minNeighbors = self.haar_minNeighbors,
-                                flags = self.haar_flags)
-        
+                                flags = cv.CV_HAAR_DO_CANNY_PRUNING,
+                                minSize = (self.haar_minSize, self.haar_minSize),
+                                maxSize = (self.haar_maxSize, self.haar_maxSize)
+                                )
+                        
         # Do we should text on the display?
         self.show_text = rospy.get_param("~show_text", True)
         
@@ -87,8 +87,9 @@ class FaceDetector(ROS2OpenCV2):
         
         # Keep tabs on the hit rate so far
         self.hit_rate = float(self.hits) / (self.hits + self.misses)
-                
+                    
         return cv_image
+
 
     def detect_face(self, input_image):
         # First check one of the frontal templates
@@ -97,7 +98,7 @@ class FaceDetector(ROS2OpenCV2):
                                          
         # If that fails, check the profile template
         if len(faces) == 0 and self.cascade_3:
-            faces = self.cascade_3.detectMultiScale(input_image,**self.haar_params)
+            faces = self.cascade_3.detectMultiScale(input_image, **self.haar_params)
 
         # If that also fails, check a the other frontal template
         if len(faces) == 0 and self.cascade_2:

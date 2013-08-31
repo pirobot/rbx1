@@ -236,7 +236,7 @@ class HeadTracker():
           
         # Pan the camera only if the x target offset exceeds the threshold
         if abs(percent_offset_x) > self.pan_threshold:
-            # Set the pan speed proportion to the target offset
+            # Set the pan speed proportional to the target offset
             self.pan_speed = trunc(min(self.max_joint_speed, max(0, self.gain_pan * abs(percent_offset_x))), 2)
             
             # Set the target position ahead or behind the current position
@@ -251,7 +251,7 @@ class HeadTracker():
         
         # Tilt the camera only if the y target offset exceeds the threshold
         if abs(percent_offset_y) > self.tilt_threshold:
-            # Set the tilt speed proportion to the target offset
+            # Set the tilt speed proportional to the target offset
             self.tilt_speed = trunc(min(self.max_joint_speed, max(0, self.gain_tilt * abs(percent_offset_y))), 2)
 
             # Set the target position ahead or behind the current position

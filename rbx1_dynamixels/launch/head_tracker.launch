@@ -1,5 +1,12 @@
 <launch>
   <node pkg="rbx1_dynamixels" name="head_tracker" type="head_tracker.py" output="screen">
     <remap from="camera_info" to="/camera/rgb/camera_info" />
+    
+     <rosparam>
+       gain_pan: 1.0
+       gain_tilt: 1.0
+       max_joint_speed: 0.5
+    </rosparam>
+    
   </node>
 </launch>

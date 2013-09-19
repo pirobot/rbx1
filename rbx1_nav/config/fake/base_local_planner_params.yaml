@@ -1,4 +1,4 @@
-controller_frequency: 5.0
+controller_frequency: 3.0
 recovery_behavior_enabled: false
 clearing_rotation_allowed: false
 
@@ -21,7 +21,7 @@ TrajectoryPlannerROS:
    meter_scoring: true
 
    heading_lookahead: 0.325
-   heading_scoring: true
+   heading_scoring: false
    heading_scoring_timestep: 0.8
    occdist_scale: 0.1
    oscillation_reset_dist: 0.05

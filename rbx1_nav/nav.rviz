@@ -9,7 +9,7 @@ Panels:
         - /RobotModel1/Links1/base_footprint1
         - /Marker1/Namespaces1
       Splitter Ratio: 0.652661
-    Tree Height: 505
+    Tree Height: 603
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -74,6 +74,11 @@ Visualization Manager:
       Collision Enabled: false
       Enabled: true
       Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
         base_footprint:
           Alpha: 1
           Show Axes: false
@@ -84,26 +89,54 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        camera_depth_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_depth_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         camera_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        camera_rgb_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_rgb_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         front_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        gyro_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         laser:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        left_cliff_sensor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         left_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        leftfront_cliff_sensor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         plate_0_link:
           Alpha: 1
           Show Axes: false
@@ -129,11 +162,19 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        right_cliff_sensor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         right_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        rightfront_cliff_sensor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         spacer_0_link:
           Alpha: 1
           Show Axes: false
@@ -224,6 +265,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        wall_sensor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
@@ -352,7 +397,7 @@ Visualization Manager:
       Class: rviz/TopDownOrtho
       Name: Current View
       Near Clip Distance: 0.01
-      Scale: 214.387
+      Scale: 240.113
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
       X: 0.767558
@@ -361,10 +406,10 @@ Visualization Manager:
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 744
+  Height: 841
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000012d00000288fc0200000005fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000198000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000004100000288000000dd00ffffff000000010000010f00000270fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000002800000270000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004a00000003efc0100000002fb0000000800540069006d00650000000000000004a0000002f600fffffffb0000000800540069006d00650100000000000004500000000000000000000003e20000028800000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000012d000002eafc0200000005fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000198000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000041000002ea000000dd00ffffff000000010000010f00000270fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000002800000270000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004a00000003efc0100000002fb0000000800540069006d00650000000000000004a0000002f600fffffffb0000000800540069006d0065010000000000000450000000000000000000000307000002ea00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -373,6 +418,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1301
-  X: 595
-  Y: -28
+  Width: 1082
+  X: 814
+  Y: 32

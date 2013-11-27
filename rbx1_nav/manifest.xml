@@ -16,7 +16,7 @@
   <depend package="visualization_msgs"/>
   <depend package="tf"/>
   <depend package="actionlib"/>
-  <depend package="kdl"/>
+  <depend package="orocos_kdl"/>
   <depend package="dynamic_reconfigure"/>
 
 </package>

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
 <robot name="turtlebot_create">
-  <include filename="$(find rbx1_description)/urdf/turtlebot_hardware.xacro" />
-  <include filename="$(find rbx1_description)/urdf/gazebo.urdf.xacro"/>
+  <xacro:include filename="$(find rbx1_description)/urdf/turtlebot_hardware.xacro" />
+  <xacro:include filename="$(find rbx1_description)/urdf/gazebo.urdf.xacro"/>
 
   <material name="Green">
     <color rgba="0.0 0.8 0.0 1.0"/>

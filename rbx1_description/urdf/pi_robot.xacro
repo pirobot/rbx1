@@ -6,8 +6,8 @@
   <property name="MESH_SCALE" value="100"/>
   <property name="GROUND_CLEARANCE" value="0.073" />
   
-  <include filename="$(find rbx1_description)/urdf/pi_robot_head.xacro" />
-  <include filename="$(find rbx1_description)/urdf/pi_robot_arm.xacro" />
+  <xacro:include filename="$(find rbx1_description)/urdf/pi_robot_head.xacro" />
+  <xacro:include filename="$(find rbx1_description)/urdf/pi_robot_arm.xacro" />
 
   <material name="Green">
     <color rgba="0.0 0.8 0.0 1.0"/>

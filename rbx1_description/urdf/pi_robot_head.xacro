@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <robot>
-  <include filename="$(find rbx1_description)/urdf/pi_robot_head_hardware.xacro" />
+  <xacro:include filename="$(find rbx1_description)/urdf/pi_robot_head_hardware.xacro" />
 
   <macro name="pi_robot_head" params="parent color *origin"> 
     <link name="head_base_link" />     

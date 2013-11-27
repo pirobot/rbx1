@@ -62,6 +62,9 @@ class NavSquare():
         # Initialize the tf listener
         self.tf_listener = tf.TransformListener()
         
+        # Give tf some time to fill its buffer
+        rospy.sleep(2)
+        
         # Set the odom frame
         self.odom_frame = '/odom'
         

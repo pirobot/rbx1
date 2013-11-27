@@ -5,10 +5,10 @@
        xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
        xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
        xmlns:xacro="http://ros.org/wiki/xacro">
-  <include filename="$(find rbx1_description)/urdf/turtlebot_hardware.urdf.xacro" />
-  <include filename="$(find rbx1_description)/urdf/turtlebot_body.urdf.xacro" />
-  <include filename="$(find rbx1_description)/urdf/turtlebot_calibration.xacro" />
-  <include filename="$(find rbx1_description)/urdf/turtlebot_kinect.urdf.xacro" />
+  <xacro:include filename="$(find rbx1_description)/urdf/turtlebot_hardware.urdf.xacro" />
+  <xacro:include filename="$(find rbx1_description)/urdf/turtlebot_body.urdf.xacro" />
+  <xacro:include filename="$(find rbx1_description)/urdf/turtlebot_calibration.xacro" />
+  <xacro:include filename="$(find rbx1_description)/urdf/turtlebot_kinect.urdf.xacro" />
 
   <property name="M_PI" value="3.14159"/>
   <property name="SCALE" value="0.0254"/>

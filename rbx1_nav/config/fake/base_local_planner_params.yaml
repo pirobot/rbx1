@@ -1,4 +1,4 @@
-controller_frequency: 3.0
+controller_frequency: 2.0
 recovery_behavior_enabled: false
 clearing_rotation_allowed: false
 
@@ -15,9 +15,9 @@ TrajectoryPlannerROS:
    holonomic_robot: false
    yaw_goal_tolerance: 0.1 # about 6 degrees
    xy_goal_tolerance: 0.05  # 5 cm
-   latch_xy_goal_tolerance: false
-   pdist_scale: 0.8
-   gdist_scale: 0.4
+   latch_xy_goal_tolerance: true
+   pdist_scale: 0.4
+   gdist_scale: 0.8
    meter_scoring: true
 
    heading_lookahead: 0.325

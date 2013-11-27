@@ -3,7 +3,7 @@
 <robot>
   <property name="MESH_SCALE" value="100"/>
 
-  <include filename="$(find rbx1_description)/urdf/head_hardware.xacro" />
+  <xacro:include filename="$(find rbx1_description)/urdf/head_hardware.xacro" />
 
   <macro name="turtlebot_head" params="parent color *origin"> 
     <link name="head_base_link" />     

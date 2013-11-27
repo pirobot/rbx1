@@ -3,7 +3,7 @@
 <robot>
   <property name="MESH_SCALE" value="100"/>
 
-  <include filename="$(find rbx1_description)/urdf/pi_robot_arm_hardware.xacro" />
+  <xacro:include filename="$(find rbx1_description)/urdf/pi_robot_arm_hardware.xacro" />
 
   <material name="white">
     <color rgba="0.87 0.90 0.87 1.0"/>

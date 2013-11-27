@@ -67,6 +67,9 @@ class CalibrateLinear():
         # Initialize the tf listener
         self.tf_listener = tf.TransformListener()
         
+        # Give tf some time to fill its buffer
+        rospy.sleep(2)
+        
         # Make sure we see the odom and base frames
         self.tf_listener.waitForTransform(self.odom_frame, self.base_frame, rospy.Time(), rospy.Duration(60.0))        
             

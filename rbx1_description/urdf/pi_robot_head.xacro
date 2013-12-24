@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<robot>
+<robot name="pi_robot_head" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:include filename="$(find rbx1_description)/urdf/pi_robot_head_hardware.xacro" />
 
   <macro name="pi_robot_head" params="parent color *origin"> 

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot>
+<robot name="head_hardware" xmlns:xacro="http://ros.org/wiki/xacro">
   <property name="M_PI" value="3.14159"/>
   <property name="M_SCALE" value="0.001"/>
   <property name="F10_HEIGHT" value="0.004"/>

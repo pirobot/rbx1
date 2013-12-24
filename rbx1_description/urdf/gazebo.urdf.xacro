@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 
-<robot xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" xmlns:xacro="http://ros.org/wiki/xacro" name="turtlebot_gazebo">
+<robot xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" 
+	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+	xmlns:xacro="http://ros.org/wiki/xacro" name="turtlebot_gazebo">
 
 <!-- ASUS Xtion PRO camera for simulation -->
 <!-- gazebo_ros_wge100 plugin is in kt2_gazebo_plugins package -->

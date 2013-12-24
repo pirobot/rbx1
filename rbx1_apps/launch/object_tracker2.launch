@@ -4,7 +4,7 @@
   <node pkg="rbx1_apps" name="object_tracker" type="object_tracker2.py" output="screen">
   
     <remap from="camera_info" to="/camera/depth_registered/camera_info" />
-    <remap from="depth_image" to="/camera/depth_registered/image_rect" />
+    <remap from="depth_image" to="/camera/depth_registered/image_raw" />
 
     <rosparam>
        rate: 10

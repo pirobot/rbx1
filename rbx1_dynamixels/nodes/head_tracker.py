@@ -34,34 +34,41 @@ class HeadTracker():
         
         rospy.on_shutdown(self.shutdown)
         
-        self.rate = rospy.get_param("~rate", 10)
-        r = rospy.Rate(self.rate)
+        rate = rospy.get_param("~rate", 20)
+        r = rospy.Rate(rate)
+        tick = 1.0 / rate
         
-        # The namespace and joints parameter needs to be set by the servo controller
-        # (The namespace is usually null.)
-        namespace = rospy.get_namespace()
-        self.joints = rospy.get_param(namespace + '/joints', '')
+        # Keep the speed updates below about 5 Hz; otherwise the servos
+        # can behave erratically.
+        speed_update_rate = rospy.get_param("~speed_update_rate", 5)
+        speed_update_interval = 1.0 / speed_update_rate
         
-        # What are the names of the pan and tilt joint in the list of dynamixels?
-        self.head_pan_joint = 'head_pan_joint'
-        self.head_tilt_joint = 'head_tilt_joint'
+        # How big a change do we need in speed before we push an update
+        # to the servos?
+        self.speed_update_threshold = rospy.get_param("~speed_update_threshold", 0.01)
+        
+        # What are the names of the pan and tilt joints in the list of dynamixels?
+        self.head_pan_joint = rospy.get_param('~head_pan_joint', 'head_pan_joint')
+        self.head_tilt_joint = rospy.get_param('~head_tilt_joint', 'head_tilt_joint')
+        
+        self.joints = [self.head_pan_joint, self.head_tilt_joint]
         
         # Joint speeds are given in radians per second
         self.default_joint_speed = rospy.get_param('~default_joint_speed', 0.3)
         self.max_joint_speed = rospy.get_param('~max_joint_speed', 0.5)
-        
+
         # How far ahead or behind the target (in radians) should we aim for?
-        self.lead_target_angle = rospy.get_param('~lead_target_angle', 0.5)
+        self.lead_target_angle = rospy.get_param('~lead_target_angle', 1.0)
         
         # The pan/tilt thresholds indicate what percentage of the image window
         # the ROI needs to be off-center before we make a movement
-        self.pan_threshold = int(rospy.get_param("~pan_threshold", 0.05))
-        self.tilt_threshold = int(rospy.get_param("~tilt_threshold", 0.05))
+        self.pan_threshold = rospy.get_param("~pan_threshold", 0.05)
+        self.tilt_threshold = rospy.get_param("~tilt_threshold", 0.05)
         
-        # The gain_pan and gain_tilt parameter determine how responsive the servo movements are.
-        # If these are set too high, oscillation can result.
-        self.gain_pan = rospy.get_param("~gain_pan", 0.5)
-        self.gain_tilt = rospy.get_param("~gain_tilt", 0.5)
+        # The gain_pan and gain_tilt parameter determine how responsive the
+        # servo movements are. If these are set too high, oscillation can result.
+        self.gain_pan = rospy.get_param("~gain_pan", 1.0)
+        self.gain_tilt = rospy.get_param("~gain_tilt", 1.0)
         
         # Set limits on the pan and tilt angles
         self.max_pan = rospy.get_param("~max_pan", radians(145))
@@ -69,30 +76,8 @@ class HeadTracker():
         self.max_tilt = rospy.get_param("~max_tilt", radians(90))
         self.min_tilt = rospy.get_param("~min_tilt", radians(-90))
         
-        # Initialize the servo services and publishers
-        self.init_servos()
-                
-        # Center the pan and tilt servos at the start
-        rospy.loginfo("Centering servos...")
-        self.center_head_servos()
-
-        # Set a flag to indicate when the target has been lost
-        self.target_visible = False
-        
-        # Set a counter to determine when we should give up on the target
-        self.target_lost_count = 0
-        
-        # How long we are willing to wait before giving up
-        self.max_target_lost_count = self.rate * 5
-        
-        self.last_tilt_speed = 0
-        self.last_pan_speed = 0
-        
-        # Wait for messages on the three topics we need to monitor
-        rospy.loginfo("Waiting for roi and camera_info topics...")
-        rospy.wait_for_message('camera_info', CameraInfo)
-        rospy.wait_for_message('joint_states', JointState)
-        rospy.wait_for_message('roi', RegionOfInterest)
+        # How long we are willing to wait (in seconds) for a target before re-centering the servos?
+        self.recenter_timeout = rospy.get_param('~recenter_timeout', 5)
         
         # Monitor the joint states of the pan and tilt servos
         self.joint_state = JointState()
@@ -101,6 +86,30 @@ class HeadTracker():
         # Wait until we actually have joint state values
         while self.joint_state == JointState():
             rospy.sleep(1)
+        
+        # Initialize the servo services and publishers
+        self.init_servos()
+                
+        # Center the pan and tilt servos at the start
+        self.center_head_servos()
+
+        # Set a flag to indicate when the target has been lost
+        self.target_visible = False
+        
+        # Set a timer to determine how long a target is no longer visible
+        target_lost_timer = 0.0
+        
+        # Set a timer to track when we do a speed update
+        speed_update_timer = 0.0
+        
+        # Initialize the pan and tilt speeds to zero
+        pan_speed = tilt_speed = 0.0
+        
+        # Wait for messages on the three topics we need to monitor
+        rospy.loginfo("Waiting for roi and camera_info topics.")
+        rospy.wait_for_message('camera_info', CameraInfo)
+        rospy.wait_for_message('joint_states', JointState)
+        rospy.wait_for_message('roi', RegionOfInterest)
 
         # Subscribe to camera_info topics and set the callback
         self.image_width = self.image_height = 0
@@ -116,110 +125,59 @@ class HeadTracker():
         rospy.loginfo("Ready to track target.")
                 
         while not rospy.is_shutdown():
+            
             # If we have lost the target, stop the servos
             if not self.target_visible:
-                self.pan_speed = 0
-                self.tilt_speed = 0
+                pan_speed = 0.0
+                tilt_speed = 0.0
+                
                 # Keep track of how long the target is lost
-                self.target_lost_count += 1
+                target_lost_timer += tick
             else:
+                pan_speed = self.pan_speed
+                tilt_speed = self.tilt_speed
+            
                 self.target_visible = False
-                self.target_lost_count = 0
-            
-            # If the target is lost long enough, center the servos
-            if self.target_lost_count > self.max_target_lost_count:
+                target_lost_timer = 0.0
+                            
+            # If the target is lost long enough, re-center the servos
+            if target_lost_timer > self.recenter_timeout:
+                rospy.loginfo("Cannot find target.")
                 self.center_head_servos()
+                target_lost_timer = 0.0                
             else:               
-                try:
-                    # Only update the pan speed if it differs from the last value
-                    if self.last_pan_speed != self.pan_speed:
-                        self.set_servo_speed(self.head_pan_joint, self.pan_speed)
-                        self.last_pan_speed = self.pan_speed
+                # Update the servo speeds at the appropriate interval
+                if speed_update_timer > speed_update_interval: 
+                    if abs(self.last_pan_speed - pan_speed) > self.speed_update_threshold:
+                        self.set_servo_speed(self.head_pan_joint, pan_speed)
+                        self.last_pan_speed = pan_speed
+                    
+                    if abs(self.last_tilt_speed - tilt_speed) > self.speed_update_threshold:
+                        self.set_servo_speed(self.head_tilt_joint, tilt_speed)
+                        self.last_tilt_speed = tilt_speed
+                                            
+                    speed_update_timer = 0.0
+                
+                # Update the pan position   
+                if self.last_pan_position != self.pan_position:
                     self.set_servo_position(self.head_pan_joint, self.pan_position)
-                except:
-                    # If there are exceptions, momentarily stop the head movement by setting
-                    # the target pan position to the current position
-                    try:
-                        current_pan_position = self.tilt_speedlf.joint_state.position[self.joint_state.name.index(self.head_pan_joint)]
-                        self.set_servo_position(self.head_pan_joint, current_pan_position)
-                        rospy.logerr("Servo SetSpeed Exception!")
-                        rospy.logerr(sys.exc_info())
-                    except:
-                        pass
-                                 
-                try:
-                    # Only update the tilt speed if it differs from the last value
-                    if self.last_tilt_speed != self.tilt_speed:
-                        self.set_servo_speed(self.head_tilt_joint, self.tilt_speed)
-                        self.last_tilt_speed = self.tilt_speed
-                    self.set_servo_position(self.head_tilt_joint, self.tilt_position)
-                except:
-                    # If there are exceptions, momentarily stop the head movement by setting
-                    # the target tilt position to the current position
-                    try:
-                        current_tilt_position = self.joint_state.position[self.joint_state.name.index(self.head_tilt_joint)]
-                        self.set_servo_position(self.head_tilt_joint, current_tilt_position)
-                        rospy.logerr("Servo SetSpeed Exception!")
-                        rospy.logerr(sys.exc_info())
-                    except:
-                        pass
-                                    
-            r.sleep()
+                    self.last_pan_position = self.pan_position
             
-    def init_servos(self):
-        # Create dictionaries to hold the speed, position and torque controllers
-        self.servo_speed = dict()
-        self.servo_position = dict()
-        self.torque_enable = dict()
-
-        # Connect to the set_speed and torque_enable services and
-        # define a position publisher for each servo
-        rospy.loginfo("Waiting for joint controllers services...")
-        
-        for controller in sorted(self.joints):
-            try:
-                # The set_speed services
-                set_speed_service = '/' + controller + '/set_speed'
-                rospy.wait_for_service(set_speed_service)  
-                self.servo_speed[controller] = rospy.ServiceProxy(set_speed_service, SetSpeed, persistent=True)
+                # Update the tilt position
+                if self.last_tilt_position != self.tilt_position:
+                    self.set_servo_position(self.head_tilt_joint, self.tilt_position)
+                    self.last_tilt_position = self.tilt_position
+            
+            speed_update_timer += tick
+              
+            r.sleep()
                 
-                # Initialize the servo speed to the default_joint_speed
-                self.servo_speed[controller](self.default_joint_speed)
-                
-                # Torque enable/disable control for each servo
-                torque_service = '/' + controller + '/torque_enable'
-                rospy.wait_for_service(torque_service) 
-                self.torque_enable[controller] = rospy.ServiceProxy(torque_service, TorqueEnable)
-                
-                # Start each servo in the disabled state so we can move them by hand
-                self.torque_enable[controller](False)
-
-                # The position controllers
-                self.servo_position[controller] = rospy.Publisher('/' + controller + '/command', Float64)
-            except:
-                rospy.logerr("Can't contact servo services!")
-        
-        self.pan_position = 0
-        self.tilt_position = 0
-        self.pan_speed = 0
-        self.tilt_speed = 0
-        
-        self.last_tilt_speed = 0
-        self.last_pan_speed = 0
-        
-    def set_servo_speed(self, servo, speed):
-        """ A speed of exactly 0 has a special meaning for Dynamixel servos--namely, "move as fast as you can".
-            This can have some very undesirable consequences since it is the complete opposite of what 0 normally
-            means.  So we define a very small speed value to represent zero speed. """
-        if speed == 0:
-            speed = 0.0001
-        
-        self.servo_speed[servo](speed)
-        
-    def set_servo_position(self, servo, position):
-        self.servo_position[servo].publish(position)
-        
     def set_joint_cmd(self, msg):
+        # If we receive an ROI messages with 0 width or height, the target is not visible
+        if msg.width == 0 or msg.height == 0:
+            self.target_visible = False
+            return
+        
         # If the ROI stops updating this next statement will not happen
         self.target_visible = True
 
@@ -233,14 +191,14 @@ class HeadTracker():
         except:
             percent_offset_x = 0
             percent_offset_y = 0
-          
-        # Pan the camera only if the x target offset exceeds the threshold
-        if abs(percent_offset_x) > self.pan_threshold:
-            # Set the pan speed proportional to the target offset
-            self.pan_speed = trunc(min(self.max_joint_speed, max(0, self.gain_pan * abs(percent_offset_x))), 2)
             
-            # Set the target position ahead or behind the current position
-            current_pan = self.joint_state.position[self.joint_state.name.index(self.head_pan_joint)]
+        # Set the target position ahead or behind the current position
+        current_pan = self.joint_state.position[self.joint_state.name.index(self.head_pan_joint)]
+                
+        # Pan the camera only if the x target offset exceeds the threshold
+        if abs(percent_offset_x) > self.pan_threshold:            
+            # Set the pan speed proportional to the target offset
+            self.pan_speed = min(self.max_joint_speed, max(0, self.gain_pan * abs(percent_offset_x)))
 
             if target_offset_x > 0:
                 self.pan_position = max(self.min_pan, current_pan - self.lead_target_angle)
@@ -248,14 +206,15 @@ class HeadTracker():
                 self.pan_position = min(self.max_pan, current_pan + self.lead_target_angle)
         else:
             self.pan_speed = 0
+            self.pan_position = current_pan
+            
+        # Set the target position ahead or behind the current position
+        current_tilt = self.joint_state.position[self.joint_state.name.index(self.head_tilt_joint)]
         
         # Tilt the camera only if the y target offset exceeds the threshold
         if abs(percent_offset_y) > self.tilt_threshold:
             # Set the tilt speed proportional to the target offset
-            self.tilt_speed = trunc(min(self.max_joint_speed, max(0, self.gain_tilt * abs(percent_offset_y))), 2)
-
-            # Set the target position ahead or behind the current position
-            current_tilt = self.joint_state.position[self.joint_state.name.index(self.head_tilt_joint)]
+            self.tilt_speed = min(self.max_joint_speed, max(0, self.gain_tilt * abs(percent_offset_y)))
 
             if target_offset_y < 0:
                 self.tilt_position = max(self.min_tilt, current_tilt - self.lead_target_angle)
@@ -263,17 +222,75 @@ class HeadTracker():
                 self.tilt_position = min(self.max_tilt, current_tilt + self.lead_target_angle)
         else:
             self.tilt_speed = 0
+            self.tilt_position = current_tilt
             
     def center_head_servos(self):
-        try:
-            self.servo_speed[self.head_pan_joint](self.default_joint_speed)
-            self.servo_speed[self.head_tilt_joint](self.default_joint_speed)
-            for i in range(3):
-                self.servo_position[self.head_pan_joint].publish(0)
-                self.servo_position[self.head_tilt_joint].publish(0)
-                rospy.sleep(1)
-        except:
-            pass
+        rospy.loginfo("Centering servos.")
+
+        self.servo_speed[self.head_pan_joint](self.default_joint_speed)
+        self.servo_speed[self.head_tilt_joint](self.default_joint_speed)
+        
+        current_tilt = self.joint_state.position[self.joint_state.name.index(self.head_tilt_joint)]
+        current_pan = self.joint_state.position[self.joint_state.name.index(self.head_pan_joint)]
+
+        while abs(current_tilt) > 0.05 or abs(current_pan) > 0.05:
+            self.servo_position[self.head_pan_joint].publish(0)
+            self.servo_position[self.head_tilt_joint].publish(0)
+            
+            rospy.sleep(0.1)
+            
+            current_tilt = self.joint_state.position[self.joint_state.name.index(self.head_tilt_joint)]
+            current_pan = self.joint_state.position[self.joint_state.name.index(self.head_pan_joint)]
+
+        self.servo_speed[self.head_pan_joint](0.0)
+        self.servo_speed[self.head_tilt_joint](0.0)
+        
+    def init_servos(self):
+        # Create dictionaries to hold the speed, position and torque controllers
+        self.servo_speed = dict()
+        self.servo_position = dict()
+        self.torque_enable = dict()
+
+        # Connect to the set_speed services and define a position publisher for each servo
+        rospy.loginfo("Waiting for joint controllers services...")
+                
+        for joint in sorted(self.joints):
+            # The set_speed services
+            set_speed_service = '/' + joint + '/set_speed'
+            rospy.wait_for_service(set_speed_service)
+            self.servo_speed[joint] = rospy.ServiceProxy(set_speed_service, SetSpeed, persistent=True)
+
+            # Initialize the servo speed to the default_joint_speed
+            self.servo_speed[joint](self.default_joint_speed)
+
+            # The position controllers
+            self.servo_position[joint] = rospy.Publisher('/' + joint + '/command', Float64)
+            
+            # A service to enable/disable servo torque
+            torque_enable = '/' + joint + '/torque_enable'
+            rospy.wait_for_service(torque_enable) 
+            self.torque_enable[joint] = rospy.ServiceProxy(torque_enable, TorqueEnable)
+            self.torque_enable[joint](False)
+        
+        self.pan_position = 0
+        self.tilt_position = 0
+        self.pan_speed = 0
+        self.tilt_speed = 0
+        
+        self.last_pan_position = 0
+        self.last_tilt_position = 0
+        self.last_tilt_speed = 0
+        self.last_pan_speed = 0
+        
+    def set_servo_speed(self, servo, speed):
+        # Guard against a speed of exactly zero which means 
+        # "move as fast as you can" to a Dynamixel servo.
+        if speed == 0:
+            speed = 0.01
+        self.servo_speed[servo](speed)
+        
+    def set_servo_position(self, servo, position):
+        self.servo_position[servo].publish(position)
             
     def update_joint_state(self, msg):
         self.joint_state = msg
@@ -283,25 +300,16 @@ class HeadTracker():
         self.image_height = msg.height
         
     def shutdown(self):
-        rospy.loginfo("Shutting down head tracking node...")
+        rospy.loginfo("Shutting down head tracking node.")
+        
         self.center_head_servos()
         
         # Relax all servos to give them a rest.
+        rospy.loginfo("Relaxing pan and tilt servos.")
+        
         for servo in self.joints:
             self.torque_enable[servo](False)
-        
-def trunc(f, n):
-    '''Truncates/pads a float f to n decimal places without rounding'''
-    slen = len('%.*f' % (n, f))
-    return float(str(f)[:slen])
-
-            
-    def getCameraInfo(self, msg):
-        self.image_width = msg.width
-        self.image_height = msg.height
-        
-    def shutdown(self):
-        rospy.loginfo("Shutting down head tracking node...")         
+             
                    
 if __name__ == '__main__':
     try:

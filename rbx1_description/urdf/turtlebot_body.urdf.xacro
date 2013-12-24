@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="turtlebot_hardware" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="turtlebot_body" xmlns:xacro="http://ros.org/wiki/xacro">
   <property name="M_PI" value="3.14159"/>
   <property name="MESH_SCALE" value="100"/>
 

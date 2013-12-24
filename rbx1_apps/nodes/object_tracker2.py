@@ -111,6 +111,7 @@ class ObjectTracker():
         rospy.Subscriber("depth_image", Image, self.convert_depth_image)
         
         # Wait for the depth image to become available
+        rospy.loginfo("Waiting for depth_image topic...")
         rospy.wait_for_message('depth_image', Image)
         
         # Subscribe to the ROI topic and set the callback to update the robot's motion

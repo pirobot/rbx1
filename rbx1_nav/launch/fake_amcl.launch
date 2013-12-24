@@ -9,7 +9,7 @@ nn
   <node name="map_server" pkg="map_server" type="map_server" args="$(find rbx1_nav)/maps/$(arg map)"/>
 
   <!-- The move_base node -->
-  <include file="$(find rbx1_nav)/launch/fake_move_base.launch" />
+  <include file="$(find rbx1_nav)/launch/fake_move_base_amcl.launch" />
   
   <!-- Run fake localization compatible with AMCL output -->
   <node pkg="fake_localization" type="fake_localization" name="fake_localization" output="screen" />

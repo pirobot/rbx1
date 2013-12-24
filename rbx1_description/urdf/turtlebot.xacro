@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 
-<robot name="turtlebot_create">
-  <xacro:include filename="$(find rbx1_description)/urdf/turtlebot_hardware.xacro" />
+<robot name="turtlebot" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find rbx1_description)/urdf/turtlebot_hardware.xacro"/>
+
   <xacro:include filename="$(find rbx1_description)/urdf/gazebo.urdf.xacro"/>
 
   <material name="Green">

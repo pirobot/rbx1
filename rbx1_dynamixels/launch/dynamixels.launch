@@ -16,7 +16,7 @@
          namespace: turtlebot_dynamixel_manager
          serial_ports:
             dynamixel_ax12:
-               port_name: /dev/ttyUSB1
+               port_name: /dev/ttyUSB0
                baud_rate: 1000000
                min_motor_id:  1
                max_motor_id: 2

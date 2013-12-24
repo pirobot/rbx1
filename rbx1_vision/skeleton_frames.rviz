@@ -6,8 +6,10 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-      Splitter Ratio: 0.5
-    Tree Height: 557
+        - /TF1
+        - /TF1/Frames1
+      Splitter Ratio: 0.85906
+    Tree Height: 507
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -22,7 +24,10 @@ Panels:
     Name: Views
     Splitter Ratio: 0.5
   - Class: rviz/Time
+    Experimental: false
     Name: Time
+    SyncMode: 0
+    SyncSource: ""
 Visualization Manager:
   Class: ""
   Displays:
@@ -48,86 +53,88 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 15
       Frames:
-        /skeleton/head_1:
-          Value: true
-        /skeleton/left_elbow_1:
-          Value: true
-        /skeleton/left_foot_1:
-          Value: true
-        /skeleton/left_hand_1:
-          Value: true
-        /skeleton/left_hip_1:
-          Value: true
-        /skeleton/left_knee_1:
-          Value: true
-        /skeleton/left_shoulder_1:
-          Value: true
-        /skeleton/neck_1:
-          Value: true
-        /skeleton/openni_depth_frame:
-          Value: true
-        /skeleton/right_elbow_1:
-          Value: true
-        /skeleton/right_foot_1:
-          Value: true
-        /skeleton/right_hand_1:
-          Value: true
-        /skeleton/right_hip_1:
-          Value: true
-        /skeleton/right_knee_1:
-          Value: true
-        /skeleton/right_shoulder_1:
-          Value: true
-        /skeleton/torso_1:
-          Value: true
         All Enabled: true
+        head_2:
+          Value: true
+        left_elbow_2:
+          Value: true
+        left_foot_2:
+          Value: true
+        left_hand_2:
+          Value: true
+        left_hip_2:
+          Value: true
+        left_knee_2:
+          Value: true
+        left_shoulder_2:
+          Value: true
+        neck_2:
+          Value: true
+        openni_depth_frame:
+          Value: true
+        right_elbow_2:
+          Value: true
+        right_foot_2:
+          Value: true
+        right_hand_2:
+          Value: true
+        right_hip_2:
+          Value: true
+        right_knee_2:
+          Value: true
+        right_shoulder_2:
+          Value: true
+        torso_2:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: false
       Show Axes: true
       Show Names: false
       Tree:
-        /skeleton/openni_depth_frame:
-          /skeleton/head_1:
+        openni_depth_frame:
+          head_2:
             {}
-          /skeleton/left_elbow_1:
+          left_elbow_2:
             {}
-          /skeleton/left_foot_1:
+          left_foot_2:
             {}
-          /skeleton/left_hand_1:
+          left_hand_2:
             {}
-          /skeleton/left_hip_1:
+          left_hip_2:
             {}
-          /skeleton/left_knee_1:
+          left_knee_2:
             {}
-          /skeleton/left_shoulder_1:
+          left_shoulder_2:
             {}
-          /skeleton/neck_1:
+          neck_2:
             {}
-          /skeleton/right_elbow_1:
+          right_elbow_2:
             {}
-          /skeleton/right_foot_1:
+          right_foot_2:
             {}
-          /skeleton/right_hand_1:
+          right_hand_2:
             {}
-          /skeleton/right_hip_1:
+          right_hip_2:
             {}
-          /skeleton/right_knee_1:
+          right_knee_2:
             {}
-          /skeleton/right_shoulder_1:
+          right_shoulder_2:
             {}
-          /skeleton/torso_1:
+          torso_2:
             {}
       Update Interval: 0
       Value: true
   Enabled: true
   Global Options:
     Background Color: 0; 0; 0
-    Fixed Frame: /skeleton/openni_depth_frame
+    Fixed Frame: openni_depth_frame
+    Frame Rate: 30
   Name: root
   Tools:
     - Class: rviz/MoveCamera
     - Class: rviz/Interact
+      Hide Inactive Objects: true
     - Class: rviz/Select
     - Class: rviz/SetInitialPose
       Topic: /initialpose
@@ -137,25 +144,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.98214
+      Distance: 2.98777
       Focal Point:
-        X: 0.758762
-        Y: -0.0257015
-        Z: -0.364664
+        X: 1.69061
+        Y: 0.269926
+        Z: -0.333953
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.269807
+      Pitch: 0.239807
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.357219
+      Yaw: 0.2972
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 831
+  Height: 720
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000013c000002bcfc0200000005fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000041000002bc000000dd00ffffff000000010000010f00000346fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000004100000346000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004a00000003efc0100000002fb0000000800540069006d00650000000000000004a0000002bf00fffffffb0000000800540069006d00650100000000000004500000000000000000000002f2000002bc00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000013c0000028afc0200000005fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c00610079007301000000280000028a000000dd00ffffff000000010000010f00000346fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000004100000346000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004a00000003efc0100000002fb0000000800540069006d00650000000000000004a0000002f600fffffffb0000000800540069006d00650100000000000004500000000000000000000002d50000028a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -164,6 +171,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1092
-  X: 581
+  Width: 1047
+  X: 567
   Y: 118

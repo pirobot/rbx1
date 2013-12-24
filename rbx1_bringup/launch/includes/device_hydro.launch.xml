@@ -26,7 +26,7 @@
   <!-- Driver nodelet -->
   <node pkg="nodelet" type="nodelet" name="driver" 
         args="load openni_camera/driver $(arg manager) $(arg bond)"
-	respawn="$(arg respawn)">
+        respawn="$(arg respawn)">
     <param name="device_id" value="$(arg device_id)" />
     <param name="rgb_camera_info_url"   value="$(arg rgb_camera_info_url)" />
     <param name="depth_camera_info_url" value="$(arg depth_camera_info_url)" />

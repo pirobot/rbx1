@@ -55,8 +55,8 @@ class HeadTracker():
         
         # The pan/tilt thresholds indicate what percentage of the image window
         # the ROI needs to be off-center before we make a movement
-        self.pan_threshold = int(rospy.get_param("~pan_threshold", 0.05))
-        self.tilt_threshold = int(rospy.get_param("~tilt_threshold", 0.05))
+        self.pan_threshold = rospy.get_param("~pan_threshold", 0.05)
+        self.tilt_threshold = rospy.get_param("~tilt_threshold", 0.05)
         
         # The gain_pan and gain_tilt parameter determine how responsive the servo movements are.
         # If these are set too high, oscillation can result.

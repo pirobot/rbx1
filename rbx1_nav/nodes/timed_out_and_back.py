@@ -32,7 +32,7 @@ class OutAndBack():
         # Give the node a name
         rospy.init_node('out_and_back', anonymous=False)
 
-        # Set rospy to exectute a shutdown function when exiting       
+        # Set rospy to execute a shutdown function when exiting       
         rospy.on_shutdown(self.shutdown)
         
         # Publisher to control the robot's speed

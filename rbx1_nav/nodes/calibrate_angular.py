@@ -37,7 +37,7 @@ class CalibrateAngular():
         # Give the node a name
         rospy.init_node('calibrate_angular', anonymous=False)
         
-        # Set rospy to exectute a shutdown function when terminating the script
+        # Set rospy to execute a shutdown function when terminating the script
         rospy.on_shutdown(self.shutdown)
         
         # How fast will we check the odometry values?

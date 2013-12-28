@@ -42,5 +42,10 @@
 
    <!-- Start all Dynamixels in the relaxed state -->
    <node pkg="rbx1_dynamixels" type="relax_all_servos.py" name="relax_all_servos" />
+   
+   <!-- We need a static transforms for the TurtleBot wheels -->
+   <node pkg="tf" type="static_transform_publisher" name="odom_left_wheel_broadcaster" args="0 0 0 0 0 0 /base_link /left_wheel_link 100" />
+   <node pkg="tf" type="static_transform_publisher" name="odom_right_wheel_broadcaster" args="0 0 0 0 0 0 /base_link /right_wheel_link 100" />
+   <node pkg="tf" type="static_transform_publisher" name="odom_front_wheel_broadcaster" args="0 0 0 0 0 0 /base_link /front_wheel_link 100" />
 
 </launch>

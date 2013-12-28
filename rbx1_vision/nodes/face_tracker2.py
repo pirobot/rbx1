@@ -136,6 +136,8 @@ class FaceTracker(FaceDetector, LKTracker):
         except:
             try:
                 x,y,w,h = track_box
+                x = x + w / 2
+                y = y + h / 2
             except:
                 rospy.loginfo("Track box has shrunk to zero...")
                 return
@@ -151,7 +153,7 @@ class FaceTracker(FaceDetector, LKTracker):
         pt2 = (x + int(w_new / 2), y + int(h_new / 2))
         
         mask_box = ((x, y), (w_new, h_new), a)
-
+        
         # Display the expanded ROI with a yellow rectangle
         if self.show_add_drop:
             cv2.rectangle(self.marker_image, pt1, pt2, cv.RGB(255, 255, 0))

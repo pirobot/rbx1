@@ -101,6 +101,7 @@ class ObjectTracker():
     def set_cmd_vel(self, msg):
         # If the ROI has a width or height of 0, we have lost the target
         if msg.width == 0 or msg.height == 0:
+            self.target_visible = False
             return
         
         # If the ROI stops updating this next statement will not happen

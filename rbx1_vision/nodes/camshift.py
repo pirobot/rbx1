@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 
-""" camshift_node.py - Version 1.0 2011-04-19
+""" camshift_node.py - Version 1.1 2013-12-20
 
     Modification of the ROS OpenCV Camshift example using cv_bridge and publishing the ROI
     coordinates to the /roi topic.   
 """
 
-import roslib; roslib.load_manifest('rbx1_vision')
 import rospy
 import cv2
 from cv2 import cv as cv
-from ros2opencv2 import ROS2OpenCV2
+from rbx1_vision.ros2opencv2 import ROS2OpenCV2
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 import numpy as np

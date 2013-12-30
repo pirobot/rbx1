@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    talkback.py - Version 0.1 2012-01-10
+    talkback.py - Version 1.1 2013-12-20
     
     Use the sound_play client to say back what is heard by the pocketsphinx recognizer.
     
@@ -21,7 +21,6 @@
     http://www.gnu.org/licenses/gpl.htmlPoint
 """
 
-import roslib; roslib.load_manifest('rbx1_speech')
 import rospy
 from std_msgs.msg import String
 from sound_play.libsoundplay import SoundClient

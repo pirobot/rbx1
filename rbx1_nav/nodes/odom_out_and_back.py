@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" odom_out_and_back.py - Version 0.1 2012-03-24
+""" odom_out_and_back.py - Version 1.1 2013-12-20
 
     A basic demo of using the /odom topic to move a robot a given distance
     or rotate through a given angle.
@@ -22,11 +22,10 @@
       
 """
 
-import roslib; roslib.load_manifest('rbx1_nav')
 import rospy
 from geometry_msgs.msg import Twist, Point, Quaternion
 import tf
-from transform_utils import quat_to_angle, normalize_angle
+from rbx1_nav.transform_utils import quat_to_angle, normalize_angle
 from math import radians, copysign, sqrt, pow, pi
 
 class OutAndBack():

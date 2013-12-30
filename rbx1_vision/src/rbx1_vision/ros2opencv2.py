@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" ros2opencv2.py - Version 0.1 2011-04-24
+""" ros2opencv2.py - Version 1.1 2013-12-20
 
     A ROS-to-OpenCV node that uses cv_bridge to map a ROS image topic and optionally a ROS
     depth image topic to the equivalent OpenCV image stream(s).
@@ -27,7 +27,6 @@
       
 """
 
-import roslib; roslib.load_manifest('rbx1_vision')
 import rospy
 import cv2
 import cv2.cv as cv

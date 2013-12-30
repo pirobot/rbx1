@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" lk_tracker.py - Version 1.0 2012-02-11
+""" lk_tracker.py - Version 1.1 2013-12-20
 
     Based on the OpenCV lk_track.py demo code
     
@@ -20,12 +20,11 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import roslib; roslib.load_manifest('rbx1_vision')
 import rospy
 import cv2
 import cv2.cv as cv
 import numpy as np
-from good_features import GoodFeatures
+from rbx1_vision.good_features import GoodFeatures
 
 class LKTracker(GoodFeatures):
     def __init__(self, node_name):

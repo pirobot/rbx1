@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    dynamixel_joint_state_publisher.py - Version 1.0 2010-12-28
+    dynamixel_joint_state_publisher.py - Version 1.1 2013-12-20
     
     Publish the dynamixel_controller joint states on the /joint_states topic
     
@@ -21,9 +21,7 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import roslib; roslib.load_manifest('rbx1_dynamixels')
 import rospy
-
 from sensor_msgs.msg import JointState as JointStatePR2
 from dynamixel_msgs.msg import JointState as JointStateDynamixel
 

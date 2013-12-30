@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" timed_out_and_back.py - Version 0.1 2012-03-24
+""" timed_out_and_back.py - Version 1.1 2013-12-20
 
     A basic demo of the using odometry data to move the robot along
     and out-and-back trajectory.
@@ -22,7 +22,6 @@
       
 """
 
-import roslib; roslib.load_manifest('rbx1_nav')
 import rospy
 from geometry_msgs.msg import Twist
 from math import pi

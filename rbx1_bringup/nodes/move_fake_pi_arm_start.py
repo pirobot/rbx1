@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" move_fake_pi_arm_start.py - Version 0.1 2012-07-08
+""" move_fake_pi_arm_start.py - Version 1.1 2013-12-20
 
     Position the fake Pi Robot's arm to a more natural starting position.
 
@@ -21,7 +21,6 @@
       
 """
 
-import roslib; roslib.load_manifest('rbx1_bringup')
 import rospy
 
 from std_msgs.msg import Float64

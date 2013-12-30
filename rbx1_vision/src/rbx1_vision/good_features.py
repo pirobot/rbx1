@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" good_features.py - Version 1.0 2012-02-11
+""" good_features.py - Version 1.1 2013-12-20
 
     Locate the Good Features To Track in a video stream.
     
@@ -20,11 +20,10 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import roslib; roslib.load_manifest('rbx1_vision')
 import rospy
 import cv2
 import cv2.cv as cv
-from ros2opencv2 import ROS2OpenCV2
+from rbx1_vision.ros2opencv2 import ROS2OpenCV2
 import numpy as np
 
 class GoodFeatures(ROS2OpenCV2):

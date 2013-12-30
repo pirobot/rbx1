@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" nav_test.py - Version 0.1 2012-01-10
+""" nav_test.py - Version 1.1 2013-12-20
 
     Command a robot to move autonomously among a number of goal locations defined in the map frame.
     On each round, select a new random sequence of locations, then attempt to move to each location
@@ -23,7 +23,6 @@
       
 """
 
-import roslib; roslib.load_manifest('rbx1_nav')
 import rospy
 import actionlib
 from actionlib_msgs.msg import *

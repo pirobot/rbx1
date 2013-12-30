@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" odom_ekf.py - Version 0.1 2012-07-08
+""" odom_ekf.py - Version 1.1 2013-12-20
 
     Republish the /robot_pose_ekf/odom_combined topic which is of type 
     geometry_msgs/PoseWithCovarianceStamped as an equivalent message of
@@ -23,7 +23,6 @@
       
 """
 
-import roslib; roslib.load_manifest('rbx1_nav')
 import rospy
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from nav_msgs.msg import Odometry

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" face_detector.py - Version 1.0 2012-02-11
+""" face_detector.py - Version 1.1 2013-12-20
 
     Based on the OpenCV facedetect.py demo code
     
@@ -22,11 +22,10 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import roslib; roslib.load_manifest('rbx1_vision')
 import rospy
 import cv2
 import cv2.cv as cv
-from ros2opencv2 import ROS2OpenCV2
+from rbx1_vision.ros2opencv2 import ROS2OpenCV2
 
 class FaceDetector(ROS2OpenCV2):
     def __init__(self, node_name):

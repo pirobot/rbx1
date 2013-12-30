@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    head_tracker.py - Version 1.0 2010-12-28
+    head_tracker.py - Version 1.1 2013-12-20
     
     Move the head to track a target published on the /roi topic.
     
@@ -21,7 +21,6 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import roslib; roslib.load_manifest('rbx1_dynamixels')
 import rospy
 from sensor_msgs.msg import JointState, RegionOfInterest, CameraInfo
 from dynamixel_controllers.srv import *

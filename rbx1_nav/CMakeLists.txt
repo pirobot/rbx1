@@ -12,3 +12,5 @@ find_package(catkin REQUIRED)
 set(ROS_BUILD_TYPE RelWithDebInfo)
 
 catkin_package()
+
+catkin_python_setup()

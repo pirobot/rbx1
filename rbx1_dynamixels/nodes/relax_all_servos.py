@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    relax_all_servos.py - Version 0.1 2012-03-24
+    relax_all_servos.py - Version 1.1 2013-12-20
     
     Relax all servos by disabling the torque and setting the speed
     and torque limit to a moderate values.
@@ -21,8 +21,7 @@
     
     http://www.gnu.org/licenses/gpl.html
 """
-import roslib
-roslib.load_manifest('rbx1_dynamixels')
+
 import rospy, time
 from dynamixel_controllers.srv import TorqueEnable, SetTorqueLimit, SetSpeed
 

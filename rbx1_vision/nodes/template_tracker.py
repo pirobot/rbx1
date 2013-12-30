@@ -1,16 +1,14 @@
 #!/usr/bin/python
 
 
-""" template_tracker.py - Version 1.0 2012-02-28
+""" template_tracker.py - Version 1.1 2013-12-20
 
     Based on the C++ FastMatchTemplate code by Tristen Georgiou:
     
     http://opencv.willowgarage.com/wiki/FastMatchTemplate
 """
 
-import roslib; roslib.load_manifest('rbx1_vision')
-import rospy
-from ros2opencv2 import ROS2OpenCV2
+from rbx1_vision.ros2opencv2 import ROS2OpenCV2
 from sensor_msgs.msg import Image, RegionOfInterest
 from geometry_msgs.msg import Point
 import sys

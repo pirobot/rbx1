@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-  voice_nav.py
+  voice_nav.py - Version 1.1 2013-12-20
   
   Allows controlling a mobile base using simple speech commands.
   
@@ -11,7 +11,6 @@
   See http://www.ros.org/wiki/pocketsphinx
 """
 
-import roslib; roslib.load_manifest('rbx1_speech')
 import rospy
 from geometry_msgs.msg import Twist
 from std_msgs.msg import String

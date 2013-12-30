@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" video2ros.py - Version 0.1 2012-05-31
+""" video2ros.py - Version 1.1 2013-12-20
 
     Read in a recorded video file and republish as a ROS Image topic.
     
@@ -21,8 +21,6 @@
       
 """
 
-import roslib; roslib.load_manifest('rbx1_vision')
-import rospy
 import sys
 from cv2 import cv as cv
 import cv2

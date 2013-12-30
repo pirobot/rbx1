@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    object_tracker.py - Version 1.0 2012-06-01
+    object_tracker.py - Version 1.1 2013-12-20
     
     Rotate the robot left or right to follow a target published on the /roi topic.
     
@@ -21,7 +21,6 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import roslib; roslib.load_manifest('rbx1_apps')
 import rospy
 from sensor_msgs.msg import RegionOfInterest, CameraInfo
 from geometry_msgs.msg import Twist

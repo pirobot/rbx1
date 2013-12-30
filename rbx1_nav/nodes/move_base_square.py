@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" move_base_square.py - Version 0.1 2012-01-10
+""" move_base_square.py - Version 1.1 2013-12-20
 
     Command a robot to move in a square using move_base actions..
 
@@ -21,7 +21,6 @@
       
 """
 
-import roslib; roslib.load_manifest('rbx1_nav')
 import rospy
 import actionlib
 from actionlib_msgs.msg import *

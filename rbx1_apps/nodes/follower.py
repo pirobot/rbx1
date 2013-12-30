@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    follower.py - Version 1.0 2012-06-01
+    follower.py - Version 1.1 2013-12-20
     
     Follow a "person" by tracking the nearest object in x-y-z space.
     
@@ -25,12 +25,11 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import roslib; roslib.load_manifest('rbx1_apps')
 import rospy
 from sensor_msgs.msg import PointCloud2
 from geometry_msgs.msg import Twist
 from math import copysign
-import point_cloud2
+from rbx1_apps import point_cloud2
 
 class Follower():
     def __init__(self):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    object_follower.py - Version 1.0 2013-07-18
+    object_follower.py - Version 1.1 2013-12-20
     
     Follow a target published on the /roi topic using depth from the depth image.
     
@@ -21,7 +21,6 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import roslib; roslib.load_manifest('rbx1_apps')
 import rospy
 from sensor_msgs.msg import Image, RegionOfInterest, CameraInfo
 from geometry_msgs.msg import Twist

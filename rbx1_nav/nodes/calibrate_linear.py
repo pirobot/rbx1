@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" calibrate_linear.py - Version 0.1 2012-03-24
+""" calibrate_linear.py - Version 1.1 2013-12-20
 
     Move the robot 1.0 meter to check on the PID parameters of the base controller.
 
@@ -21,7 +21,6 @@
       
 """
 
-import roslib; roslib.load_manifest('rbx1_nav')
 import rospy
 from geometry_msgs.msg import Twist, Point
 from math import copysign, sqrt, pow

@@ -8,4 +8,3 @@ global_costmap:
    resolution: 0.01
    transform_tolerance: 1.0
    map_type: costmap
-   

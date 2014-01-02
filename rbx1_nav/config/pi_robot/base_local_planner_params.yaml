@@ -5,6 +5,8 @@ clearing_rotation_allowed: true
 TrajectoryPlannerROS:
   max_vel_x: 0.2
   min_vel_x: 0.05
+  max_vel_y: 0.0
+  min_vel_y: 0.0
   max_vel_theta: 2.0
   min_vel_theta: 0.5
   min_in_place_vel_theta: 0.5
@@ -12,7 +14,7 @@ TrajectoryPlannerROS:
   min_in_place_rotational_vel: 0.5
   escape_vel: -0.10
   acc_lim_x: 0.75
-  acc_lim_y: 0.75
+  acc_lim_y: 0.0
   acc_lim_theta: 1.0
 
   holonomic_robot: false
@@ -33,6 +35,7 @@ TrajectoryPlannerROS:
   sim_granularity: 0.025
   angular_sim_granularity: 0.025
   vx_samples: 8
+  vy_samples: 0
   vtheta_samples: 20
   dwa: true
   simple_attractor: false

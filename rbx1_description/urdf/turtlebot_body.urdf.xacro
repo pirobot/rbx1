@@ -17,15 +17,6 @@
   <!-- base_footprint is a fictitious link(frame) that is on the ground right below base_link origin, navigation stack depends on this frame -->
 
   <link name="base_footprint">
-<!--
-    <inertial>
-      <mass value="0.0001" />
-      <origin xyz="0 0 0" />
-      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
-              iyy="0.0001" iyz="0.0" 
-              izz="0.0001" />
-    </inertial>
--->
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
@@ -92,8 +83,6 @@
         iyy="0.001" iyz="0.0" izz="0.001" />
     </inertial>
   </link>
-
-
 
   <link name="leftfront_cliff_sensor_link">
     <inertial>
@@ -173,7 +162,7 @@
     </collision>
   </link>
 
-  <joint name="left_wheel_joint" type="continuous">
+  <joint name="base_l_wheel_joint" type="continuous">
     <origin xyz="0 0.13 0.015" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="left_wheel_link"/>
@@ -203,7 +192,7 @@
     </collision>
   </link>
 
-  <joint name="right_wheel_joint" type="continuous">
+  <joint name="base_r_wheel_joint" type="continuous">
     <origin xyz="0 -0.13 0.015" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="right_wheel_link"/>
@@ -232,6 +221,7 @@
       </geometry>
     </collision>
   </link>
+  
   <!-- fixed because there's no transmission -->
   <joint name="rear_castor_joint" type="fixed">
     <origin xyz="-0.13 0 0.0" rpy="0 0 0"/>

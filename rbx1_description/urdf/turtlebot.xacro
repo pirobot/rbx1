@@ -176,7 +176,7 @@
     </collision>
   </link>
 
-  <joint name="left_wheel_joint" type="continuous">
+  <joint name="base_l_wheel_joint" type="continuous">
     <origin xyz="0 0.13 0.015" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="left_wheel_link"/>
@@ -206,7 +206,7 @@
     </collision>
   </link>
 
-  <joint name="right_wheel_joint" type="continuous">
+  <joint name="base_r_wheel_joint" type="continuous">
     <origin xyz="0 -0.13 0.015" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="right_wheel_link"/>
@@ -235,6 +235,7 @@
       </geometry>
     </collision>
   </link>
+  
   <joint name="rear_castor_joint" type="fixed">
     <origin xyz="-0.13 0 0.0" rpy="0 0 0"/>
     <parent link="base_link"/>

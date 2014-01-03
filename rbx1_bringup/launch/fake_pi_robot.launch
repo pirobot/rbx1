@@ -7,6 +7,7 @@
   <param name="robot_description" command="$(arg urdf_file)" />
     
   <node name="arbotix" pkg="arbotix_python" type="arbotix_driver" output="screen">
+      <rosparam command="delete" param="/arbotix" />
       <rosparam file="$(find rbx1_bringup)/config/fake_pi_arbotix.yaml" command="load" />
       <param name="sim" value="true"/>
   </node>

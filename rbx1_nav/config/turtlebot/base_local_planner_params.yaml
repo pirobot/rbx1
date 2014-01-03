@@ -5,6 +5,8 @@ clearing_rotation_allowed: false
 TrajectoryPlannerROS:
    max_vel_x: 0.3
    min_vel_x: 0.05
+   max_vel_y: 0.0  # zero for a differential drive robot
+   min_vel_y: 0.0
    max_rotational_vel: 1.0
    min_in_place_vel_theta: 0.5
    escape_vel: -0.1

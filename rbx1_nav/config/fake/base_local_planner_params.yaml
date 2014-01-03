@@ -5,13 +5,13 @@ clearing_rotation_allowed: false
 TrajectoryPlannerROS:
    max_vel_x: 0.5
    min_vel_x: 0.1
-   max_vel_y = 0.0
-   min_vel_y = 0.0
+   max_vel_y: 0.0  # zero for a differential drive robot
+   min_vel_y: 0.0
    max_rotational_vel: 1.0
    min_in_place_vel_theta: 0.4
    escape_vel: -0.1
    acc_lim_x: 1.5
-   acc_lim_y: 0.0
+   acc_lim_y: 0.0  # zero for a differential drive robot
    acc_lim_th: 1.2
 
    holonomic_robot: false
@@ -34,7 +34,7 @@ TrajectoryPlannerROS:
    sim_granularity: 0.05
    angular_sim_granularity: 0.1
    vx_samples: 8
-   vy_samples: 0
+   vy_samples: 0  # zero for a differential drive robot
    vtheta_samples: 20
    dwa: true
    simple_attractor: false

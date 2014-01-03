@@ -21,6 +21,7 @@
       
 """
 
+import rospy
 import sys
 from cv2 import cv as cv
 import cv2

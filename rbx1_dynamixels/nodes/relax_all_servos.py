@@ -22,7 +22,8 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import rospy, time
+import rospy
+import time
 from dynamixel_controllers.srv import TorqueEnable, SetTorqueLimit, SetSpeed
 
 class Relax():

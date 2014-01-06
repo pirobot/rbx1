@@ -2,7 +2,7 @@
   <node pkg="rbx1_vision" name="face_tracker2" type="face_tracker2.py" output="screen">
 
     <remap from="input_rgb_image" to="/camera/rgb/image_color" />
-    <remap from="input_depth_image" to="/camera/depth/image" />
+    <remap from="input_depth_image" to="/camera/depth_registered/image_raw" />
     
     <rosparam>
       use_depth_for_tracking: True
@@ -10,7 +10,7 @@
       abs_min_keypoints: 6
       add_keypoint_distance: 10
       std_err_xy: 2.5
-      pct_err_z: 0.42
+      pct_err_z: 0.3
       max_mse: 10000
       add_keypoints_interval: 1
       drop_keypoints_interval: 1

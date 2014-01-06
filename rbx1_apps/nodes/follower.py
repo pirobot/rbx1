@@ -26,10 +26,11 @@
 """
 
 import rospy
+from roslib import message
 from sensor_msgs.msg import PointCloud2
+from sensor_msgs import point_cloud2
 from geometry_msgs.msg import Twist
 from math import copysign
-from rbx1_apps import point_cloud2
 
 class Follower():
     def __init__(self):
@@ -60,7 +61,7 @@ class Follower():
         # How much do we weight the goal distance (z) when making a movement
         self.z_scale = rospy.get_param("~z_scale", 1.0)
 
-        # How much do we weight x-displacement of the person when making a movement        
+        # How much do we weight left/right displacement of the person when making a movement        
         self.x_scale = rospy.get_param("~x_scale", 2.5)
         
         # The maximum rotation speed in radians per second
@@ -74,11 +75,17 @@ class Follower():
         
         # The minimum linear speed in meters per second
         self.min_linear_speed = rospy.get_param("~min_linear_speed", 0.1)
-    
+        
+        # Slow down factor when stopping
+        self.slow_down_factor = rospy.get_param("~slow_down_factor", 0.8)
+        
+        # Initialize the movement command
+        self.move_cmd = Twist()
+
         # Publisher to control the robot's movement
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist)
 
-        rospy.Subscriber('point_cloud', PointCloud2, self.set_cmd_vel)
+        rospy.Subscriber('point_cloud', PointCloud2, self.set_cmd_vel, queue_size=1)
 
         rospy.loginfo("Subscribing to point cloud...")
         
@@ -90,7 +97,7 @@ class Follower():
     def set_cmd_vel(self, msg):
         # Initialize the centroid coordinates point count
         x = y = z = n = 0
-        
+
         # Read in the x, y, z coordinates of all points in the cloud
         for point in point_cloud2.read_points(msg, skip_nans=True):
             pt_x = point[0]
@@ -103,33 +110,40 @@ class Follower():
                 y += pt_y
                 z += pt_z
                 n += 1
-                
-        # Stop the robot by default
-        move_cmd = Twist()
         
-        # If we have points, compute the centroid coordinates
-        if n:    
+       # If we have points, compute the centroid coordinates
+        if n:
             x /= n 
             y /= n 
             z /= n
-                        
+            
             # Check our movement thresholds
-            if (abs(z - self.goal_z) > self.z_threshold) or (abs(x) > self.x_threshold):     
-                # Compute the linear and angular components of the movement
+            if (abs(z - self.goal_z) > self.z_threshold):
+                # Compute the angular component of the movement
                 linear_speed = (z - self.goal_z) * self.z_scale
+                
+                # Make sure we meet our min/max specifications
+                self.move_cmd.linear.x = copysign(max(self.min_linear_speed, 
+                                        min(self.max_linear_speed, abs(linear_speed))), linear_speed)
+            else:
+                self.move_cmd.linear.x *= self.slow_down_factor
+                
+            if (abs(x) > self.x_threshold):     
+                # Compute the linear component of the movement
                 angular_speed = -x * self.x_scale
                 
                 # Make sure we meet our min/max specifications
-                linear_speed = copysign(max(self.min_linear_speed, 
-                                        min(self.max_linear_speed, abs(linear_speed))), linear_speed)
-                angular_speed = copysign(max(self.min_angular_speed, 
-                                         min(self.max_angular_speed, abs(angular_speed))), angular_speed)
-    
-                move_cmd.linear.x = linear_speed
-                move_cmd.angular.z = angular_speed
-                        
+                self.move_cmd.angular.z = copysign(max(self.min_angular_speed, 
+                                        min(self.max_angular_speed, abs(angular_speed))), angular_speed)
+            else:
+                self.move_cmd.angular.z *= self.slow_down_factor
+                
+        else:
+            self.move_cmd.linear.x *= self.slow_down_factor
+            self.move_cmd.angular.z *= self.slow_down_factor
+            
         # Publish the movement command
-        self.cmd_vel_pub.publish(move_cmd)
+        self.cmd_vel_pub.publish(self.move_cmd)
 
         
     def shutdown(self):

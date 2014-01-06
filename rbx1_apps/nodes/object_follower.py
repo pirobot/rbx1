@@ -28,6 +28,7 @@ from math import copysign, isnan, isinf
 from cv2 import cv as cv
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
+import thread
 
 class ObjectFollower():
     def __init__(self):
@@ -39,10 +40,13 @@ class ObjectFollower():
         # How often should we update the robot's motion?
         self.rate = rospy.get_param("~rate", 10)
         
+        # Get a lock for the target_visible flag
+        self.mutex = thread.allocate_lock()
+        
         r = rospy.Rate(self.rate)
         
         # Scale the ROI by this factor to avoid background distance values around the edges
-        self.scale_roi = rospy.get_param("~scale_roi", 0.75)
+        self.scale_roi = rospy.get_param("~scale_roi", 0.9)
         
         # The max linear speed in meters per second
         self.max_linear_speed = rospy.get_param("~max_linear_speed", 0.3)
@@ -64,7 +68,10 @@ class ObjectFollower():
         self.z_threshold = rospy.get_param("~z_threshold", 0.05)
         
         # The maximum distance a target can be from the robot for us to track
-        self.max_z = rospy.get_param("~max_z", 2.0)
+        self.max_z = rospy.get_param("~max_z", 1.6)
+
+        # The minimum valid distance from the RGBD camera
+        self.min_z = rospy.get_param("~min_z", 0.5)
         
         # The goal distance (in meters) to keep between the robot and the person
         self.goal_z = rospy.get_param("~goal_z", 0.75)
@@ -72,8 +79,11 @@ class ObjectFollower():
         # How much do we weight the goal distance (z) when making a movement
         self.z_scale = rospy.get_param("~z_scale", 0.5)
 
-        # How much do we weight x-displacement of the person when making a movement        
+        # How much do we weight (left/right) of the person when making a movement        
         self.x_scale = rospy.get_param("~x_scale", 2.0)
+        
+        # Slow down factor when stopping
+        self.slow_down_factor = rospy.get_param("~slow_down_factor", 0.8)
         
         # Initialize the global ROI
         self.roi = RegionOfInterest()
@@ -113,7 +123,7 @@ class ObjectFollower():
         rospy.wait_for_message('depth_image', Image)
                     
         # Subscribe to the registered depth image
-        rospy.Subscriber("depth_image", Image, self.convert_depth_image)
+        rospy.Subscriber("depth_image", Image, self.convert_depth_image, queue_size=1)
         
         # Subscribe to the ROI topic and set the callback to update the robot's motion
         rospy.Subscriber('roi', RegionOfInterest, self.set_cmd_vel)
@@ -127,28 +137,31 @@ class ObjectFollower():
         
         # Begin the tracking loop
         while not rospy.is_shutdown():
-            # If the target is not visible, stop the robot
+            # If the target is not visible, stop the robot smoothly
             if not self.target_visible:
-                self.move_cmd = Twist()
+                self.move_cmd.linear.x *= self.slow_down_factor
+                self.move_cmd.angular.z *= self.slow_down_factor
             else:
                 # Reset the flag to False by default
                 self.target_visible = False
                 
             # Send the Twist command to the robot
+            #print self.move_cmd.linear.x, self.move_cmd.angular.z
             self.cmd_vel_pub.publish(self.move_cmd)
             
             # Sleep for 1/self.rate seconds
             r.sleep()
-
+                        
     def set_cmd_vel(self, msg):
+        self.mutex.acquire()
+        
         # If the ROI has a width or height of 0, we have lost the target
         if msg.width == 0 or msg.height == 0:
             self.target_visible = False
             return
-        
-        # If the ROI stops updating this next statement will not happen
-        self.target_visible = True
-        
+        else:
+            self.target_visible = True
+
         self.roi = msg
         
         # Compute the displacement of the ROI from the center of the image
@@ -158,19 +171,15 @@ class ObjectFollower():
             percent_offset_x = float(target_offset_x) / (float(self.image_width) / 2.0)
         except:
             percent_offset_x = 0
-            
-        # Intialize the movement command
-        self.move_cmd = Twist()
         
         # Rotate the robot only if the displacement of the target exceeds the threshold
         if abs(percent_offset_x) > self.x_threshold:
             # Set the rotation speed proportional to the displacement of the target
-            try:
-                speed = percent_offset_x * self.x_scale
-                self.move_cmd.angular.z = -copysign(max(self.min_rotation_speed,
-                                            min(self.max_rotation_speed, abs(speed))), speed)
-            except:
-                pass
+            speed = percent_offset_x * self.x_scale
+            self.move_cmd.angular.z = -copysign(max(self.min_rotation_speed,
+                                        min(self.max_rotation_speed, abs(speed))), speed)
+        else:
+            self.move_cmd.angular.z = 0
             
         # Now compute the depth component
         n_z = sum_z = mean_z = 0
@@ -184,40 +193,51 @@ class ObjectFollower():
         min_y = int(self.roi.y_offset + self.roi.height * (1.0 - self.scale_roi) / 2.0)
         max_y = min_y + scaled_height
         
-        print self.roi.x_offset, self.roi.y_offset, min_x, min_y       
-        
         # Get the average depth value over the ROI
         for x in range(min_x, max_x):
             for y in range(min_y, max_y):
                 try:
+                    # Get a depth value in millimeters
                     z = self.depth_array[y, x]
+                        
+                    # Convert to meters
+                    z /= 1000.0
+                    
                 except:
+                    z = 0
+                    
+                # Check for values outside min/max range
+                if z > self.max_z:
                     continue
                 
-                # Depth values can be Infinte or NaN which should be ignored
-                if isinf(z) or isnan(z) or z > self.max_z:
-                    continue
-                else:
-                    sum_z = sum_z + z
-                    n_z += 1
+                sum_z = sum_z + z
+                n_z += 1
+                
+        # Stop the robot's forward/backward motion by default
+        linear_x = 0
         
-        # When using a Kinect, we get erroneous depth values when n_z is small
-        # Around 300 points seems to be about the right cutoff
-
-        
-        try:
-            mean_z = sum_z / n_z
-        
-            print mean_z
+        if n_z:
+            mean_z = float(sum_z) / n_z
             
-            # Only respond to an average depth less than the max depth parameter
-            # and to distances from the goal that exceed the threshold.
-            if mean_z < self.max_z and (abs(mean_z - self.goal_z) > self.z_threshold):
-                speed = (mean_z - self.goal_z) * self.z_scale
-                self.move_cmd.linear.x = copysign(min(self.max_linear_speed, max(self.min_linear_speed, abs(speed))), speed)
-        except:
-            # Stop the robot if we run into an exception
-            self.move_cmd.linear.x = 0
+            mean_z = max(self.min_z, mean_z)
+            
+            print mean_z
+                        
+            # Check the mean against the minimum range
+            if mean_z > self.min_z:
+                # Only respond to an average depth less than the max depth parameter
+                # and to distances from the goal that exceed the threshold.
+                if mean_z < self.max_z and (abs(mean_z - self.goal_z) > self.z_threshold):
+                    speed = (mean_z - self.goal_z) * self.z_scale
+                    linear_x = copysign(min(self.max_linear_speed, max(self.min_linear_speed, abs(speed))), speed)
+
+        if linear_x == 0:
+            self.move_cmd.linear.x *= self.slow_down_factor
+        else:
+            self.move_cmd.linear.x = linear_x
+        
+        self.mutex.release()
+                        
 
     def convert_depth_image(self, ros_image):
         # Use cv_bridge() to convert the ROS image to OpenCV format

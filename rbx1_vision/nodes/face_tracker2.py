@@ -26,6 +26,7 @@ import rospy
 import cv2
 import cv2.cv as cv
 import numpy as np
+from math import isnan, isinf
 from rbx1_vision.face_detector import FaceDetector
 from rbx1_vision.lk_tracker import LKTracker
 
@@ -116,7 +117,7 @@ class FaceTracker(FaceDetector, LKTracker):
                     self.detect_box = None
                 elif cc == 'd':
                     self.show_add_drop = not self.show_add_drop
-                    
+                        
         except AttributeError:
             pass
                     
@@ -216,25 +217,27 @@ class FaceTracker(FaceDetector, LKTracker):
         
         mean_x = sum_x / n_xy
         mean_y = sum_y / n_xy
+        mean_z = 0
         
         if self.use_depth_for_tracking:
-            for point in self.keypoints:
+            for point in self.keypoints:                              
                 try:
-                    z = cv.Get2D(self.depth_image, min(self.frame_height - 1, int(point[1])), min(self.frame_width - 1, int(point[0])))
+                    z = self.depth_image[point[1], point[0]]
                 except:
-                    continue
-                z = z[0]
-                # Depth values can be NaN which should be ignored
-                if isnan(z):
-                    continue
-                else:
-                    sum_z = sum_z + z
-                    
-            mean_z = sum_z / n_z
+                    n_z = n_z - 1
+                    continue        
+                
+                sum_z = sum_z + z
+            
+            try:
+                mean_z = sum_z / n_z
+            except:
+                mean_z = -1
+            
             
         else:
             mean_z = -1
-        
+                    
         # Compute the x-y MSE (mean squared error) of the cluster in the camera plane
         for point in self.keypoints:
             sse = sse + (point[0] - mean_x) * (point[0] - mean_x) + (point[1] - mean_y) * (point[1] - mean_y)
@@ -271,15 +274,14 @@ class FaceTracker(FaceDetector, LKTracker):
             sse = 0
             for point in keypoints_z:
                 try:
-                    z = cv.Get2D(self.depth_image, min(self.frame_height - 1, int(point[1])), min(self.frame_width - 1, int(point[0])))
-                    z = z[0]
+                    z = self.depth_image[point[1], point[0]]
                     sse = sse + (z - mean_z) * (z - mean_z)
                 except:
                     n_z = n_z - 1
             
-            if n_z != 0:
+            try:
                 mse_z = sse / n_z
-            else:
+            except:
                 mse_z = 0
             
             # Throw away the outliers based on depth using percent error 
@@ -287,8 +289,7 @@ class FaceTracker(FaceDetector, LKTracker):
             # dramatically at object boundaries
             for point in keypoints_z:
                 try:
-                    z = cv.Get2D(self.depth_image, min(self.frame_height - 1, int(point[1])), min(self.frame_width - 1, int(point[0])))
-                    z = z[0]
+                    z = self.depth_image[point[1], point[0]]
                 except:
                     continue
                 try:

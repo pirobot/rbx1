@@ -26,6 +26,7 @@ from sensor_msgs.msg import JointState, RegionOfInterest, CameraInfo
 from dynamixel_controllers.srv import *
 from std_msgs.msg import Float64
 from math import radians
+import thread
 
 class HeadTracker():
     def __init__(self):
@@ -39,7 +40,7 @@ class HeadTracker():
         
         # Keep the speed updates below about 5 Hz; otherwise the servos
         # can behave erratically.
-        speed_update_rate = rospy.get_param("~speed_update_rate", 5)
+        speed_update_rate = rospy.get_param("~speed_update_rate", 10)
         speed_update_interval = 1.0 / speed_update_rate
         
         # How big a change do we need in speed before we push an update
@@ -104,6 +105,9 @@ class HeadTracker():
         # Initialize the pan and tilt speeds to zero
         pan_speed = tilt_speed = 0.0
         
+        # Get a lock for updating the self.move_cmd values
+        self.lock = thread.allocate_lock()
+        
         # Wait for messages on the three topics we need to monitor
         rospy.loginfo("Waiting for roi and camera_info topics.")
         rospy.wait_for_message('camera_info', CameraInfo)
@@ -124,104 +128,117 @@ class HeadTracker():
         rospy.loginfo("Ready to track target.")
                 
         while not rospy.is_shutdown():
+            # Acquire the lock
+            self.lock.acquire()
             
-            # If we have lost the target, stop the servos
-            if not self.target_visible:
-                pan_speed = 0.0
-                tilt_speed = 0.0
-                
-                # Keep track of how long the target is lost
-                target_lost_timer += tick
-            else:
-                pan_speed = self.pan_speed
-                tilt_speed = self.tilt_speed
-            
-                self.target_visible = False
-                target_lost_timer = 0.0
-                            
-            # If the target is lost long enough, re-center the servos
-            if target_lost_timer > self.recenter_timeout:
-                rospy.loginfo("Cannot find target.")
-                self.center_head_servos()
-                target_lost_timer = 0.0                
-            else:               
-                # Update the servo speeds at the appropriate interval
-                if speed_update_timer > speed_update_interval: 
-                    if abs(self.last_pan_speed - pan_speed) > self.speed_update_threshold:
-                        self.set_servo_speed(self.head_pan_joint, pan_speed)
-                        self.last_pan_speed = pan_speed
+            try:
+                # If we have lost the target, stop the servos
+                if not self.target_visible:
+                    self.pan_speed = 0.0
+                    self.tilt_speed = 0.0
                     
-                    if abs(self.last_tilt_speed - tilt_speed) > self.speed_update_threshold:
-                        self.set_servo_speed(self.head_tilt_joint, tilt_speed)
-                        self.last_tilt_speed = tilt_speed
-                                            
-                    speed_update_timer = 0.0
+                    # Keep track of how long the target is lost
+                    target_lost_timer += tick
+                else:
+                    self.target_visible = False
+                    target_lost_timer = 0.0
+                                
+                # If the target is lost long enough, re-center the servos
+                if target_lost_timer > self.recenter_timeout:
+                    rospy.loginfo("Cannot find target.")
+                    self.center_head_servos()
+                    target_lost_timer = 0.0                
+                else:               
+                    # Update the servo speeds at the appropriate interval
+                    if speed_update_timer > speed_update_interval: 
+                        if abs(self.last_pan_speed - self.pan_speed) > self.speed_update_threshold:
+                            self.set_servo_speed(self.head_pan_joint, self.pan_speed)
+                            self.last_pan_speed = self.pan_speed
+                        
+                        if abs(self.last_tilt_speed - self.tilt_speed) > self.speed_update_threshold:
+                            self.set_servo_speed(self.head_tilt_joint, self.tilt_speed)
+                            self.last_tilt_speed = self.tilt_speed
+                                                
+                        speed_update_timer = 0.0
+                    
+                    # Update the pan position   
+                    if self.last_pan_position != self.pan_position:
+                        self.set_servo_position(self.head_pan_joint, self.pan_position)
+                        self.last_pan_position = self.pan_position
                 
-                # Update the pan position   
-                if self.last_pan_position != self.pan_position:
-                    self.set_servo_position(self.head_pan_joint, self.pan_position)
-                    self.last_pan_position = self.pan_position
+                    # Update the tilt position
+                    if self.last_tilt_position != self.tilt_position:
+                        self.set_servo_position(self.head_tilt_joint, self.tilt_position)
+                        self.last_tilt_position = self.tilt_position
+                
+                speed_update_timer += tick
             
-                # Update the tilt position
-                if self.last_tilt_position != self.tilt_position:
-                    self.set_servo_position(self.head_tilt_joint, self.tilt_position)
-                    self.last_tilt_position = self.tilt_position
-            
-            speed_update_timer += tick
+            finally:
+                # Release the lock
+                self.lock.release()
               
             r.sleep()
                 
     def set_joint_cmd(self, msg):
-        # If we receive an ROI messages with 0 width or height, the target is not visible
-        if msg.width == 0 or msg.height == 0:
-            self.target_visible = False
-            return
-        
-        # If the ROI stops updating this next statement will not happen
-        self.target_visible = True
-
-        # Compute the displacement of the ROI from the center of the image
-        target_offset_x = msg.x_offset + msg.width / 2 - self.image_width / 2
-        target_offset_y = msg.y_offset + msg.height / 2 - self.image_height / 2
+        # Acquire the lock
+        self.lock.acquire()
         
         try:
-            percent_offset_x = float(target_offset_x) / (float(self.image_width) / 2.0)
-            percent_offset_y = float(target_offset_y) / (float(self.image_height) / 2.0)
-        except:
-            percent_offset_x = 0
-            percent_offset_y = 0
+            # If we receive an ROI messages with 0 width or height, the target is not visible
+            if msg.width == 0 or msg.height == 0:
+                self.target_visible = False
+                return
             
-        # Set the target position ahead or behind the current position
-        current_pan = self.joint_state.position[self.joint_state.name.index(self.head_pan_joint)]
+            # If the ROI stops updating this next statement will not happen
+            self.target_visible = True
+    
+            # Compute the displacement of the ROI from the center of the image
+            target_offset_x = msg.x_offset + msg.width / 2 - self.image_width / 2
+            target_offset_y = msg.y_offset + msg.height / 2 - self.image_height / 2
+            
+            try:
+                percent_offset_x = float(target_offset_x) / (float(self.image_width) / 2.0)
+                percent_offset_y = float(target_offset_y) / (float(self.image_height) / 2.0)
+            except:
+                percent_offset_x = 0
+                percent_offset_y = 0
                 
-        # Pan the camera only if the x target offset exceeds the threshold
-        if abs(percent_offset_x) > self.pan_threshold:            
-            # Set the pan speed proportional to the target offset
-            self.pan_speed = min(self.max_joint_speed, max(0, self.gain_pan * abs(percent_offset_x)))
-
-            if target_offset_x > 0:
-                self.pan_position = max(self.min_pan, current_pan - self.lead_target_angle)
+            # Set the target position ahead or behind the current position
+            current_pan = self.joint_state.position[self.joint_state.name.index(self.head_pan_joint)]
+                    
+            # Pan the camera only if the x target offset exceeds the threshold
+            if abs(percent_offset_x) > self.pan_threshold:            
+                # Set the pan speed proportional to the target offset
+                self.pan_speed = min(self.max_joint_speed, max(0, self.gain_pan * abs(percent_offset_x)))
+    
+                if target_offset_x > 0:
+                    self.pan_position = max(self.min_pan, current_pan - self.lead_target_angle)
+                else:
+                    self.pan_position = min(self.max_pan, current_pan + self.lead_target_angle)
             else:
-                self.pan_position = min(self.max_pan, current_pan + self.lead_target_angle)
-        else:
-            self.pan_speed = 0
-            self.pan_position = current_pan
+                self.pan_speed = 0
+                self.pan_position = current_pan
+                
+            # Set the target position ahead or behind the current position
+            current_tilt = self.joint_state.position[self.joint_state.name.index(self.head_tilt_joint)]
             
-        # Set the target position ahead or behind the current position
-        current_tilt = self.joint_state.position[self.joint_state.name.index(self.head_tilt_joint)]
-        
-        # Tilt the camera only if the y target offset exceeds the threshold
-        if abs(percent_offset_y) > self.tilt_threshold:
-            # Set the tilt speed proportional to the target offset
-            self.tilt_speed = min(self.max_joint_speed, max(0, self.gain_tilt * abs(percent_offset_y)))
-
-            if target_offset_y < 0:
-                self.tilt_position = max(self.min_tilt, current_tilt - self.lead_target_angle)
+            # Tilt the camera only if the y target offset exceeds the threshold
+            if abs(percent_offset_y) > self.tilt_threshold:
+                # Set the tilt speed proportional to the target offset
+                self.tilt_speed = min(self.max_joint_speed, max(0, self.gain_tilt * abs(percent_offset_y)))
+    
+                if target_offset_y < 0:
+                    self.tilt_position = max(self.min_tilt, current_tilt - self.lead_target_angle)
+                else:
+                    self.tilt_position = min(self.max_tilt, current_tilt + self.lead_target_angle)
             else:
-                self.tilt_position = min(self.max_tilt, current_tilt + self.lead_target_angle)
-        else:
-            self.tilt_speed = 0
-            self.tilt_position = current_tilt
+                self.tilt_speed = 0
+                self.tilt_position = current_tilt
+
+        finally:
+            # Release the lock
+            self.lock.release()
+            
             
     def center_head_servos(self):
         rospy.loginfo("Centering servos.")
@@ -316,7 +333,3 @@ if __name__ == '__main__':
         rospy.spin()
     except rospy.ROSInterruptException:
         rospy.loginfo("Head tracking node terminated.")
-
-
-
-

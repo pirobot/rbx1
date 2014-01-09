@@ -4,7 +4,7 @@
     
      <rosparam>
        rate: 20
-       speed_update_rate: 5
+       speed_update_rate: 10
        speed_update_threshold: 0.01
        recenter_timeout: 5
        pan_threshold: 0.05

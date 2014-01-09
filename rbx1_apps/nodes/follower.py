@@ -27,8 +27,8 @@
 
 import rospy
 from roslib import message
-from sensor_msgs.msg import PointCloud2
 from sensor_msgs import point_cloud2
+from sensor_msgs.msg import PointCloud2
 from geometry_msgs.msg import Twist
 from math import copysign
 
@@ -85,7 +85,8 @@ class Follower():
         # Publisher to control the robot's movement
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist)
 
-        rospy.Subscriber('point_cloud', PointCloud2, self.set_cmd_vel, queue_size=1)
+        # Subscribe to the point cloud
+        self.depth_subscriber = rospy.Subscriber('point_cloud', PointCloud2, self.set_cmd_vel, queue_size=1)
 
         rospy.loginfo("Subscribing to point cloud...")
         
@@ -105,7 +106,7 @@ class Follower():
             pt_z = point[2]
             
             # Keep only those points within our designated boundaries and sum them up
-            if -pt_y > self.min_y and -pt_y < self.max_y and  pt_x < self.max_x and pt_x > self.min_x and pt_z < self.max_z:
+            if -pt_y > self.min_y and -pt_y < self.max_y and pt_x < self.max_x and pt_x > self.min_x and pt_z < self.max_z:
                 x += pt_x
                 y += pt_y
                 z += pt_z
@@ -136,9 +137,11 @@ class Follower():
                 self.move_cmd.angular.z = copysign(max(self.min_angular_speed, 
                                         min(self.max_angular_speed, abs(angular_speed))), angular_speed)
             else:
+                # Stop the rotation smoothly
                 self.move_cmd.angular.z *= self.slow_down_factor
                 
         else:
+            # Stop the robot smoothly
             self.move_cmd.linear.x *= self.slow_down_factor
             self.move_cmd.angular.z *= self.slow_down_factor
             
@@ -148,8 +151,14 @@ class Follower():
         
     def shutdown(self):
         rospy.loginfo("Stopping the robot...")
+        
+        # Unregister the subscriber to stop cmd_vel publishing
+        self.depth_subscriber.unregister()
+        rospy.sleep(1)
+        
+        # Send an emtpy Twist message to stop the robot
         self.cmd_vel_pub.publish(Twist())
-        rospy.sleep(1)     
+        rospy.sleep(1)        
                    
 if __name__ == '__main__':
     try:
@@ -157,3 +166,4 @@ if __name__ == '__main__':
         rospy.spin()
     except rospy.ROSInterruptException:
         rospy.loginfo("Follower node terminated.")
+

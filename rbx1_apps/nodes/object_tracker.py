@@ -24,6 +24,7 @@
 import rospy
 from sensor_msgs.msg import RegionOfInterest, CameraInfo
 from geometry_msgs.msg import Twist
+import thread
 
 class ObjectTracker():
     def __init__(self):
@@ -56,6 +57,9 @@ class ObjectTracker():
         # Intialize the movement command
         self.move_cmd = Twist()
         
+        # Get a lock for updating the self.move_cmd values
+        self.lock = thread.allocate_lock()
+        
         # We will get the image width and height from the camera_info topic
         self.image_width = 0
         self.image_height = 0
@@ -84,52 +88,68 @@ class ObjectTracker():
         
         # Begin the tracking loop
         while not rospy.is_shutdown():
-            # If the target is not visible, stop the robot
-            if not self.target_visible:
-                self.move_cmd = Twist()
-            else:
-                # Reset the flag to False by default
-                self.target_visible = False
-                
-            # Send the Twist command to the robot
-            self.cmd_vel_pub.publish(self.move_cmd)
+            # Acquire a lock while we're setting the robot speeds
+            self.lock.acquire()
             
+            try:
+                # If the target is not visible, stop the robot
+                if not self.target_visible:
+                    self.move_cmd = Twist()
+                else:
+                    # Reset the flag to False by default
+                    self.target_visible = False
+                    
+                # Send the Twist command to the robot
+                self.cmd_vel_pub.publish(self.move_cmd)
+                
+            finally:
+                # Release the lock
+                self.lock.release()
+                
             # Sleep for 1/self.rate seconds
             r.sleep()
 
     def set_cmd_vel(self, msg):
-        # If the ROI has a width or height of 0, we have lost the target
-        if msg.width == 0 or msg.height == 0:
-            self.target_visible = False
-            return
+        # Acquire a lock while we're setting the robot speeds
+        self.lock.acquire()
         
-        # If the ROI stops updating this next statement will not happen
-        self.target_visible = True
-
-        # Compute the displacement of the ROI from the center of the image
-        target_offset_x = msg.x_offset + msg.width / 2 - self.image_width / 2
-
         try:
-            percent_offset_x = float(target_offset_x) / (float(self.image_width) / 2.0)
-        except:
-            percent_offset_x = 0
-
-        # Rotate the robot only if the displacement of the target exceeds the threshold
-        if abs(percent_offset_x) > self.x_threshold:
-            # Set the rotation speed proportional to the displacement of the target
+            # If the ROI has a width or height of 0, we have lost the target
+            if msg.width == 0 or msg.height == 0:
+                self.target_visible = False
+                return
+            
+            # If the ROI stops updating this next statement will not happen
+            self.target_visible = True
+    
+            # Compute the displacement of the ROI from the center of the image
+            target_offset_x = msg.x_offset + msg.width / 2 - self.image_width / 2
+    
             try:
-                speed = self.gain * percent_offset_x
-                if speed < 0:
-                    direction = -1
-                else:
-                    direction = 1
-                self.move_cmd.angular.z = -direction * max(self.min_rotation_speed,
-                                            min(self.max_rotation_speed, abs(speed)))
+                percent_offset_x = float(target_offset_x) / (float(self.image_width) / 2.0)
             except:
+                percent_offset_x = 0
+    
+            # Rotate the robot only if the displacement of the target exceeds the threshold
+            if abs(percent_offset_x) > self.x_threshold:
+                # Set the rotation speed proportional to the displacement of the target
+                try:
+                    speed = self.gain * percent_offset_x
+                    if speed < 0:
+                        direction = -1
+                    else:
+                        direction = 1
+                    self.move_cmd.angular.z = -direction * max(self.min_rotation_speed,
+                                                min(self.max_rotation_speed, abs(speed)))
+                except:
+                    self.move_cmd = Twist()
+            else:
+                # Otherwise stop the robot
                 self.move_cmd = Twist()
-        else:
-            # Otherwise stop the robot
-            self.move_cmd = Twist()
+
+        finally:
+            # Release the lock
+            self.lock.release()
 
     def get_camera_info(self, msg):
         self.image_width = msg.width

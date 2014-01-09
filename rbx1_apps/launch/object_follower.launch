@@ -8,8 +8,8 @@
 
     <rosparam>
        rate: 10
-       max_z: 1.6 # How far out do we want to detect
-       min_z: 0.5 # Smallest reliable distance measure
+       max_z: 1.6  # How far out do we want to detect
+       min_z: 0.2
        goal_z: 0.7
        z_threshold: 0.05
        x_threshold: 0.05

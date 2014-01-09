@@ -24,7 +24,7 @@
 import rospy
 from sensor_msgs.msg import Image, RegionOfInterest, CameraInfo
 from geometry_msgs.msg import Twist
-from math import copysign, isnan, isinf
+from math import copysign
 from cv2 import cv as cv
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
@@ -39,9 +39,6 @@ class ObjectFollower():
         
         # How often should we update the robot's motion?
         self.rate = rospy.get_param("~rate", 10)
-        
-        # Get a lock for the target_visible flag
-        self.mutex = thread.allocate_lock()
         
         r = rospy.Rate(self.rate)
         
@@ -70,7 +67,7 @@ class ObjectFollower():
         # The maximum distance a target can be from the robot for us to track
         self.max_z = rospy.get_param("~max_z", 1.6)
 
-        # The minimum valid distance from the RGBD camera
+        # The minimum distance to respond to
         self.min_z = rospy.get_param("~min_z", 0.5)
         
         # The goal distance (in meters) to keep between the robot and the person
@@ -93,6 +90,9 @@ class ObjectFollower():
         
         # Intialize the movement command
         self.move_cmd = Twist()
+        
+        # Get a lock for updating the self.move_cmd values
+        self.lock = thread.allocate_lock()
         
         # We will get the image width and height from the camera_info topic
         self.image_width = 0
@@ -122,8 +122,8 @@ class ObjectFollower():
         
         rospy.wait_for_message('depth_image', Image)
                     
-        # Subscribe to the registered depth image
-        rospy.Subscriber("depth_image", Image, self.convert_depth_image, queue_size=1)
+        # Subscribe to the depth image
+        self.depth_subscriber = rospy.Subscriber("depth_image", Image, self.convert_depth_image, queue_size=1)
         
         # Subscribe to the ROI topic and set the callback to update the robot's motion
         rospy.Subscriber('roi', RegionOfInterest, self.set_cmd_vel)
@@ -137,107 +137,122 @@ class ObjectFollower():
         
         # Begin the tracking loop
         while not rospy.is_shutdown():
-            # If the target is not visible, stop the robot smoothly
-            if not self.target_visible:
-                self.move_cmd.linear.x *= self.slow_down_factor
-                self.move_cmd.angular.z *= self.slow_down_factor
-            else:
-                # Reset the flag to False by default
-                self.target_visible = False
-                
-            # Send the Twist command to the robot
-            #print self.move_cmd.linear.x, self.move_cmd.angular.z
-            self.cmd_vel_pub.publish(self.move_cmd)
+            # Acquire a lock while we're setting the robot speeds
+            self.lock.acquire()
+            
+            try:
+                if not self.target_visible:
+                    # If the target is not visible, stop the robot smoothly
+                    self.move_cmd.linear.x *= self.slow_down_factor
+                    self.move_cmd.angular.z *= self.slow_down_factor
+                else:
+                    # Reset the flag to False by default
+                    self.target_visible = False
+                    
+                # Send the Twist command to the robot
+                self.cmd_vel_pub.publish(self.move_cmd)
+                    
+            finally:
+                # Release the lock
+                self.lock.release()
             
             # Sleep for 1/self.rate seconds
             r.sleep()
                         
     def set_cmd_vel(self, msg):
-        self.mutex.acquire()
+        # Acquire a lock while we're setting the robot speeds
+        self.lock.acquire()
         
-        # If the ROI has a width or height of 0, we have lost the target
-        if msg.width == 0 or msg.height == 0:
-            self.target_visible = False
-            return
-        else:
-            self.target_visible = True
-
-        self.roi = msg
-        
-        # Compute the displacement of the ROI from the center of the image
-        target_offset_x = msg.x_offset + msg.width / 2 - self.image_width / 2
-
         try:
-            percent_offset_x = float(target_offset_x) / (float(self.image_width) / 2.0)
-        except:
-            percent_offset_x = 0
-        
-        # Rotate the robot only if the displacement of the target exceeds the threshold
-        if abs(percent_offset_x) > self.x_threshold:
-            # Set the rotation speed proportional to the displacement of the target
-            speed = percent_offset_x * self.x_scale
-            self.move_cmd.angular.z = -copysign(max(self.min_rotation_speed,
-                                        min(self.max_rotation_speed, abs(speed))), speed)
-        else:
-            self.move_cmd.angular.z = 0
+            # If the ROI has a width or height of 0, we have lost the target
+            if msg.width == 0 or msg.height == 0:
+                self.target_visible = False
+                return
+            else:
+                self.target_visible = True
+    
+            self.roi = msg
             
-        # Now compute the depth component
-        n_z = sum_z = mean_z = 0
-         
-        # Get the min/max x and y values from the scaled ROI
-        scaled_width = int(self.roi.width * self.scale_roi)
-        scaled_height = int(self.roi.height * self.scale_roi)
-        
-        min_x = int(self.roi.x_offset + self.roi.width * (1.0 - self.scale_roi) / 2.0)
-        max_x = min_x + scaled_width
-        min_y = int(self.roi.y_offset + self.roi.height * (1.0 - self.scale_roi) / 2.0)
-        max_y = min_y + scaled_height
-        
-        # Get the average depth value over the ROI
-        for x in range(min_x, max_x):
-            for y in range(min_y, max_y):
-                try:
-                    # Get a depth value in millimeters
-                    z = self.depth_array[y, x]
-                        
-                    # Convert to meters
-                    z /= 1000.0
-                    
-                except:
-                    z = 0
-                    
-                # Check for values outside min/max range
-                if z > self.max_z:
-                    continue
+            # Compute the displacement of the ROI from the center of the image
+            target_offset_x = msg.x_offset + msg.width / 2 - self.image_width / 2
+    
+            try:
+                percent_offset_x = float(target_offset_x) / (float(self.image_width) / 2.0)
+            except:
+                percent_offset_x = 0
+            
+            # Rotate the robot only if the displacement of the target exceeds the threshold
+            if abs(percent_offset_x) > self.x_threshold:
+                # Set the rotation speed proportional to the displacement of the target
+                speed = percent_offset_x * self.x_scale
+                self.move_cmd.angular.z = -copysign(max(self.min_rotation_speed,
+                                            min(self.max_rotation_speed, abs(speed))), speed)
+            else:
+                self.move_cmd.angular.z = 0
                 
-                sum_z = sum_z + z
-                n_z += 1
+            # Now compute the depth component
+            
+            # Initialize a few depth variables
+            n_z = sum_z = mean_z = 0
+             
+            # Shrink the ROI slightly to avoid the target boundaries
+            scaled_width = int(self.roi.width * self.scale_roi)
+            scaled_height = int(self.roi.height * self.scale_roi)
+            
+            # Get the min/max x and y values from the scaled ROI
+            min_x = int(self.roi.x_offset + self.roi.width * (1.0 - self.scale_roi) / 2.0)
+            max_x = min_x + scaled_width
+            min_y = int(self.roi.y_offset + self.roi.height * (1.0 - self.scale_roi) / 2.0)
+            max_y = min_y + scaled_height
+            
+            # Get the average depth value over the ROI
+            for x in range(min_x, max_x):
+                for y in range(min_y, max_y):
+                    try:
+                        # Get a depth value in millimeters
+                        z = self.depth_array[y, x]
+                            
+                        # Convert to meters
+                        z /= 1000.0
+                        
+                    except:
+                        # It seems to work best if we convert exceptions to 0
+                        z = 0
+                        
+                    # Check for values outside max range
+                    if z > self.max_z:
+                        continue
+                    
+                    # Increment the sum and count
+                    sum_z = sum_z + z
+                    n_z += 1
+                    
+            # Stop the robot's forward/backward motion by default
+            linear_x = 0
+            
+            # If we have depth values...
+            if n_z:
+                mean_z = float(sum_z) / n_z
                 
-        # Stop the robot's forward/backward motion by default
-        linear_x = 0
+                # Don't let the mean fall below the minimum reliable range
+                mean_z = max(self.min_z, mean_z)
+                                                        
+                # Check the mean against the minimum range
+                if mean_z > self.min_z:
+                    # Check the max range and goal threshold
+                    if mean_z < self.max_z and (abs(mean_z - self.goal_z) > self.z_threshold):
+                        speed = (mean_z - self.goal_z) * self.z_scale
+                        linear_x = copysign(min(self.max_linear_speed, max(self.min_linear_speed, abs(speed))), speed)
+    
+            if linear_x == 0:
+                # Stop the robot smoothly
+                self.move_cmd.linear.x *= self.slow_down_factor
+            else:
+                self.move_cmd.linear.x = linear_x
         
-        if n_z:
-            mean_z = float(sum_z) / n_z
-            
-            mean_z = max(self.min_z, mean_z)
-            
-            print mean_z
-                        
-            # Check the mean against the minimum range
-            if mean_z > self.min_z:
-                # Only respond to an average depth less than the max depth parameter
-                # and to distances from the goal that exceed the threshold.
-                if mean_z < self.max_z and (abs(mean_z - self.goal_z) > self.z_threshold):
-                    speed = (mean_z - self.goal_z) * self.z_scale
-                    linear_x = copysign(min(self.max_linear_speed, max(self.min_linear_speed, abs(speed))), speed)
-
-        if linear_x == 0:
-            self.move_cmd.linear.x *= self.slow_down_factor
-        else:
-            self.move_cmd.linear.x = linear_x
-        
-        self.mutex.release()
-                        
+        finally:
+            # Release the lock
+            self.lock.release()
 
     def convert_depth_image(self, ros_image):
         # Use cv_bridge() to convert the ROS image to OpenCV format
@@ -256,8 +271,12 @@ class ObjectFollower():
 
     def shutdown(self):
         rospy.loginfo("Stopping the robot...")
+        # Unregister the subscriber to stop cmd_vel publishing
+        self.depth_subscriber.unregister()
+        rospy.sleep(1)
+        # Send an emtpy Twist message to stop the robot
         self.cmd_vel_pub.publish(Twist())
-        rospy.sleep(1)     
+        rospy.sleep(1)      
 
 if __name__ == '__main__':
     try:

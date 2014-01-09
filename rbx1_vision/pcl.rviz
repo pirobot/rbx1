@@ -55,8 +55,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 1.68326
-        Min Value: -1.03302
+        Max Value: 2.06099
+        Min Value: -0.781985
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -77,15 +77,15 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.01
       Style: Points
-      Topic: /camera/depth_registered/points
+      Topic: /camera/depth/points
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 0.01
-        Min Value: -0.417467
+        Max Value: 0.26448
+        Min Value: -0.433385
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -113,8 +113,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 1.38338
-        Min Value: -0.473596
+        Max Value: 1.41821
+        Min Value: -0.767951
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -122,7 +122,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: AxisColor
       Decay Time: 0
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -138,7 +138,7 @@ Visualization Manager:
       Topic: /voxel_grid
       Use Fixed Frame: true
       Use rainbow: true
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 0; 0; 0
@@ -158,17 +158,17 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.65535
+      Distance: 3.65408
       Focal Point:
-        X: 1.96764
-        Y: 0.122254
-        Z: 0.120097
+        X: 1.93752
+        Y: -0.0255875
+        Z: 0.111008
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.234807
+      Pitch: 0.109807
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.08223
+      Yaw: 2.94723
     Saved: ~
 Window Geometry:
   Displays:
@@ -186,5 +186,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1016
-  X: 878
-  Y: 24
+  X: 877
+  Y: 26

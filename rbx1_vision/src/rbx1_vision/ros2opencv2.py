@@ -284,10 +284,13 @@ class ROS2OpenCV2(object):
             print e
           
     def convert_depth_image(self, ros_image):
+        # Use cv_bridge() to convert the ROS image to OpenCV format
         try:
             depth_image = self.bridge.imgmsg_to_cv(ros_image, "32FC1")
+            
             # Convert to a numpy array since this is what OpenCV 2.3 uses
             depth_image = np.array(depth_image, dtype=np.float32)
+            
             return depth_image
         
         except CvBridgeError, e:

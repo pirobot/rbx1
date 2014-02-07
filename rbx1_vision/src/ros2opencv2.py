@@ -263,18 +263,17 @@ class ROS2OpenCV2(object):
                 
     def depth_callback(self, data):
         # Convert the ROS image to OpenCV format using a cv_bridge helper function
-        depth_image = self.convert_depth_image(data)
+        self.depth_image = self.convert_depth_image(data)
+        
+        # Convert to a numpy array since this is what OpenCV 2.3 uses
+        self.depth_array = np.array(self.depth_image, dtype=np.float32)
         
         # Some webcams invert the image
         if self.flip_image:    
-            depth_image = cv2.flip(depth_image, 0)
+            self.depth_image = cv2.flip(self.depth_image, 0)
         
         # Process the depth image
-        processed_depth_image = self.process_depth_image(depth_image)
-        
-        # Make global copies
-        self.depth_image = depth_image.copy()
-        self.processed_depth_image = processed_depth_image.copy()
+        self.processed_depth_image = self.process_depth_image(self.depth_image)
           
     def convert_image(self, ros_image):
         # Use cv_bridge() to convert the ROS image to OpenCV format
@@ -287,8 +286,7 @@ class ROS2OpenCV2(object):
     def convert_depth_image(self, ros_image):
         try:
             depth_image = self.bridge.imgmsg_to_cv(ros_image, "32FC1")
-            # Convert to a numpy array since this is what OpenCV 2.3 uses
-            depth_image = np.array(depth_image, dtype=np.float32)
+            
             return depth_image
         
         except CvBridgeError, e:

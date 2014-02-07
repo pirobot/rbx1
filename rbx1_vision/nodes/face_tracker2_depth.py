@@ -200,7 +200,7 @@ class FaceTracker(FaceDetector, LKTracker):
         keypoints_xy = self.keypoints
         keypoints_z = self.keypoints
         n_xy = len(self.keypoints)
-        n_z = n_xy
+        n_z = 0
         
         if self.use_depth_for_tracking:
             if self.depth_image is None:
@@ -220,17 +220,23 @@ class FaceTracker(FaceDetector, LKTracker):
         mean_x = sum_x / n_xy
         mean_y = sum_y / n_xy
         
+        # Get the mean depth value if using depth
         if self.use_depth_for_tracking:
             for point in self.keypoints:
-                z = self.depth_array[int(point[1]), int(point[0])]
-                if isnan(z):
-                    n_z = n_z - 1
-                else:
-                    sum_z = sum_z + z
+                try:
+                    z = self.depth_array[int(point[1]), int(point[0])]
+                    if isnan(z):
+                        keypoints_z.remove(point)
+                    else:
+                        sum_z = sum_z + z
+                except:
+                    keypoints_z.remove(point)
             
-            try:
+            n_z = len(keypoints_z)
+                        
+            if n_z > 0:
                 mean_z = sum_z / n_z
-            except:
+            else:
                 mean_z = -1
             
         else:
@@ -249,11 +255,9 @@ class FaceTracker(FaceDetector, LKTracker):
             return ((0, 0, 0), 0, 0, -1)
         
         # Throw away the outliers based on the x-y variance
-        max_err = 0
         for point in self.keypoints:
             std_err = ((point[0] - mean_x) * (point[0] - mean_x) + (point[1] - mean_y) * (point[1] - mean_y)) / mse_xy
-            if std_err > max_err:
-                max_err = std_err
+
             if std_err > outlier_threshold:
                 keypoints_xy.remove(point)
                 if self.show_add_drop:
@@ -261,7 +265,6 @@ class FaceTracker(FaceDetector, LKTracker):
                     cv2.circle(self.marker_image, (point[0], point[1]), 3, (0, 0, 255), cv.CV_FILLED, 2, 0)   
                 try:
                     keypoints_z.remove(point)
-                    n_z = n_z - 1
                 except:
                     pass
                 
@@ -270,33 +273,35 @@ class FaceTracker(FaceDetector, LKTracker):
         # Now do the same for depth
         if self.use_depth_for_tracking:
             sse = 0
-            n_z = n_xy
             
-            for point in keypoints_z:
+            for point in self.keypoints:
                 z = self.depth_array[int(point[1]), int(point[0])]
                 if isnan(z):
-                    n_z = n_z - 1
+                    keypoints_z.remove(point)
                 else:
                     sse = sse + (z - mean_z) * (z - mean_z)
-            
-            try:
+
+            n_z = len(keypoints_z)
+
+            if n_z > 0:
                 mse_z = sse / n_z
-            except:
+            else:
                 mse_z = 0
-                            
+
             # Throw away the outliers based on depth using percent error 
             # rather than standard error since depth values can jump
             # dramatically at object boundaries
-            for point in keypoints_z:
-                z = self.depth_array[int(point[1]), int(point[0])]
-                if isnan(z):
-                    continue
-                pct_err = abs(z - mean_z) / mean_z
-                if pct_err > self.pct_err_z:
-                    keypoints_xy.remove(point)
-                    if self.show_add_drop:
-                        # Briefly mark the removed points in red
-                        cv2.circle(self.marker_image, (point[0], point[1]), 2, (0, 0, 255), cv.CV_FILLED)  
+            if mean_z > 0:
+                for point in self.keypoints:
+                    z = self.depth_array[int(point[1]), int(point[0])]
+                    if isnan(z):
+                        continue
+                    pct_err = abs(z - mean_z) / mean_z
+                    if pct_err > self.pct_err_z:
+                        keypoints_xy.remove(point)
+                        if self.show_add_drop:
+                            # Briefly mark the removed points in red
+                            cv2.circle(self.marker_image, (point[0], point[1]), 2, (0, 0, 255), cv.CV_FILLED)  
 
         else:
             mse_z = -1

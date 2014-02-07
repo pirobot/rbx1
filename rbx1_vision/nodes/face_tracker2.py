@@ -28,6 +28,7 @@ import rospy
 import cv2
 import cv2.cv as cv
 import numpy as np
+from math import isnan
 from face_detector import FaceDetector
 from lk_tracker import LKTracker
 
@@ -199,7 +200,7 @@ class FaceTracker(FaceDetector, LKTracker):
         keypoints_xy = self.keypoints
         keypoints_z = self.keypoints
         n_xy = len(self.keypoints)
-        n_z = n_xy
+        n_z = 0
         
         if self.use_depth_for_tracking:
             if self.depth_image is None:
@@ -217,42 +218,47 @@ class FaceTracker(FaceDetector, LKTracker):
         mean_x = sum_x / n_xy
         mean_y = sum_y / n_xy
         
-        if self.use_depth_for_tracking:
+        # Get the mean depth value if using depth
+        if self.use_depth_for_tracking:            
             for point in self.keypoints:
                 try:
                     z = cv.Get2D(self.depth_image, min(self.frame_height - 1, int(point[1])), min(self.frame_width - 1, int(point[0])))
                 except:
+                    keypoints_z.remove(point)
                     continue
                 z = z[0]
                 # Depth values can be NaN which should be ignored
                 if isnan(z):
+                    keypoints_z.remove(point)
                     continue
                 else:
                     sum_z = sum_z + z
-                    
-            mean_z = sum_z / n_z
             
+            n_z = len(keypoints_z)
+                        
+            if n_z > 0:       
+                mean_z = sum_z / n_z
+            else:
+                mean_z = -1
+                
         else:
             mean_z = -1
         
         # Compute the x-y MSE (mean squared error) of the cluster in the camera plane
         for point in self.keypoints:
             sse = sse + (point[0] - mean_x) * (point[0] - mean_x) + (point[1] - mean_y) * (point[1] - mean_y)
-            #sse = sse + abs((point[0] - mean_x)) + abs((point[1] - mean_y))
         
         # Get the average over the number of feature points
         mse_xy = sse / n_xy
-        
+                
         # The MSE must be > 0 for any sensible feature cluster
         if mse_xy == 0 or mse_xy > mse_threshold:
             return ((0, 0, 0), 0, 0, -1)
         
         # Throw away the outliers based on the x-y variance
-        max_err = 0
         for point in self.keypoints:
             std_err = ((point[0] - mean_x) * (point[0] - mean_x) + (point[1] - mean_y) * (point[1] - mean_y)) / mse_xy
-            if std_err > max_err:
-                max_err = std_err
+            #print std_err
             if std_err > outlier_threshold:
                 keypoints_xy.remove(point)
                 if self.show_add_drop:
@@ -260,7 +266,6 @@ class FaceTracker(FaceDetector, LKTracker):
                     cv2.circle(self.marker_image, (point[0], point[1]), 3, (0, 0, 255), cv.CV_FILLED, 2, 0)   
                 try:
                     keypoints_z.remove(point)
-                    n_z = n_z - 1
                 except:
                     pass
                 
@@ -269,37 +274,48 @@ class FaceTracker(FaceDetector, LKTracker):
         # Now do the same for depth
         if self.use_depth_for_tracking:
             sse = 0
-            for point in keypoints_z:
+            for point in self.keypoints:
                 try:
                     z = cv.Get2D(self.depth_image, min(self.frame_height - 1, int(point[1])), min(self.frame_width - 1, int(point[0])))
                     z = z[0]
+                    if isnan(z):
+                        keypoints_z.remove(point)
+                        continue                        
                     sse = sse + (z - mean_z) * (z - mean_z)
                 except:
-                    n_z = n_z - 1
+                    keypoints_z.remove(point)
+                    continue
             
-            if n_z != 0:
+            n_z = len(keypoints_z)
+            
+            if n_z > 0:
                 mse_z = sse / n_z
             else:
                 mse_z = 0
-            
+                                            
             # Throw away the outliers based on depth using percent error 
             # rather than standard error since depth values can jump
             # dramatically at object boundaries
-            for point in keypoints_z:
-                try:
-                    z = cv.Get2D(self.depth_image, min(self.frame_height - 1, int(point[1])), min(self.frame_width - 1, int(point[0])))
-                    z = z[0]
-                except:
-                    continue
-                try:
-                    pct_err = abs(z - mean_z) / mean_z
-                    if pct_err > self.pct_err_z:
-                        keypoints_xy.remove(point)
-                        if self.show_add_drop:
-                            # Briefly mark the removed points in red
-                            cv2.circle(self.marker_image, (point[0], point[1]), 2, (0, 0, 255), cv.CV_FILLED)  
-                except:
-                    pass
+            if mean_z > 0:
+                for point in self.keypoints:
+                    try:
+                        z = cv.Get2D(self.depth_image, min(self.frame_height - 1, int(point[1])), min(self.frame_width - 1, int(point[0])))
+                        z = z[0]
+                        if isnan(z):
+                            continue
+                    except:
+                        continue
+                    try:
+                        pct_err = abs(z - mean_z) / mean_z
+                        #print pct_err
+                        if isnan(pct_err) or pct_err > self.pct_err_z:
+                            rospy.loginfo(pct_err)
+                            keypoints_xy.remove(point)
+                            if self.show_add_drop:
+                                # Briefly mark the removed points in red
+                                cv2.circle(self.marker_image, (point[0], point[1]), 2, (0, 0, 255), cv.CV_FILLED)  
+                    except:
+                        pass
         else:
             mse_z = -1
         

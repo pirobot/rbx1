@@ -307,9 +307,8 @@ class FaceTracker(FaceDetector, LKTracker):
                         continue
                     try:
                         pct_err = abs(z - mean_z) / mean_z
-                        #print pct_err
+                        
                         if isnan(pct_err) or pct_err > self.pct_err_z:
-                            rospy.loginfo(pct_err)
                             keypoints_xy.remove(point)
                             if self.show_add_drop:
                                 # Briefly mark the removed points in red

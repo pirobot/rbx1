@@ -52,6 +52,9 @@ class FaceTracker(FaceDetector, LKTracker):
         self.expand_roi_init = rospy.get_param("~expand_roi", 1.02)
         self.expand_roi = self.expand_roi_init
         self.face_tracking = True
+        self.camera_frame = rospy.get_param("~camera_frame", "/camera_depth_frame")
+        self.fov_width = rospy.get_param("~fov_width", 1.094)
+        self.fov_height = rospy.get_param("~fov_height", 1.094)
 
         self.frame_index = 0
         self.add_index = 0
@@ -122,6 +125,22 @@ class FaceTracker(FaceDetector, LKTracker):
                     
         except AttributeError:
             pass
+        
+        # If using depth publish the centroid of the tracked cluster as a PointStamped message
+        if self.use_depth_for_tracking and len(self.keypoints) > 0:
+            # The raw depth image is in cm so convert to meters
+            cog_z /= 1000.0
+            
+            # Convert cog_x and cog_y pixel values to meters using the fact that the Kinect's FOV is about 57 degrees or 1 radian.
+            cog_x = cog_z * self.fov_width * (cog_x - self.frame_width / 2.0) / float(self.frame_width)
+            cog_y = cog_z * self.fov_height * (cog_y - self.frame_height / 2.0) / float(self.frame_height)
+            
+            self.cog3d.header.frame_id = self.camera_frame
+            self.cog3d.header.stamp = rospy.Time.now()
+            self.cog3d.point.x = cog_x
+            self.cog3d.point.y = cog_y
+            self.cog3d.point.z = cog_z
+            self.pub_cog3d.publish(self.cog3d)
                     
         return cv_image
     

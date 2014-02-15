@@ -34,6 +34,7 @@ import cv2.cv as cv
 import sys
 from std_msgs.msg import String
 from sensor_msgs.msg import Image, RegionOfInterest, CameraInfo
+from geometry_msgs.msg import PointStamped
 from cv_bridge import CvBridge, CvBridgeError
 import time
 import numpy as np
@@ -58,6 +59,10 @@ class ROS2OpenCV2(object):
         # Initialize the Region of Interest and its publisher
         self.ROI = RegionOfInterest()
         self.roi_pub = rospy.Publisher("/roi", RegionOfInterest)
+        
+        # Do the same for the 3D COG (center of gravity)
+        self.cog3d = PointStamped()
+        self.pub_cog3d = rospy.Publisher("/target_point", PointStamped)
         
         # Initialize a number of global variables
         self.frame = None

@@ -128,6 +128,8 @@ class LKTracker(GoodFeatures):
             
             # Set the global keypoint list to the new list    
             self.keypoints = new_keypoints
+            
+            # Convert the keypoints list to a numpy array
             keypoints_array = np.float32([p for p in self.keypoints]).reshape(-1, 1, 2)  
             
             # If we have enough points, find the best fit ellipse around them

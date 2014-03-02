@@ -137,6 +137,7 @@ class FaceTracker(FaceDetector, LKTracker):
                 x,y,w,h = track_box
                 x = x + w / 2
                 y = y + h / 2
+                a = 0
             except:
                 rospy.loginfo("Track box has shrunk to zero...")
                 return

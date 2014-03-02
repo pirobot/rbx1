@@ -4,7 +4,7 @@
 
   <!-- Set the name of the map yaml file: can be overridden on the command line. -->
   <arg name="map" default="test_map.yaml" />
-nn
+
   <!-- Run the map server with the desired map -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(find rbx1_nav)/maps/$(arg map)"/>
 

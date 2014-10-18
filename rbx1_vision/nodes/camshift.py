@@ -63,10 +63,10 @@ class CamShiftNode(ROS2OpenCV2):
 
     # The main processing function computes the histogram and backprojection
     def process_image(self, cv_image):
-        # First blue the image
+        # First blur the image
         frame = cv2.blur(cv_image, (5, 5))
         
-        # Convert from RGB to HSV spave
+        # Convert from RGB to HSV space
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
         # Create a mask using the current saturation and value parameters
@@ -89,7 +89,7 @@ class CamShiftNode(ROS2OpenCV2):
         if self.detect_box is not None:
             self.selection = None
         
-        # If we have a histogram, tracking it with CamShift
+        # If we have a histogram, track it with CamShift
         if self.hist is not None:
             # Compute the backprojection from the histogram
             backproject = cv2.calcBackProject([hsv], [0], self.hist, [0, 180], 1)

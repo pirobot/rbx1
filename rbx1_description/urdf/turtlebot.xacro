@@ -153,7 +153,7 @@
     <child link="rightfront_cliff_sensor_link" />
   </joint>
 
-  <link name="left_wheel_link">
+  <link name="base_l_wheel_link">
     <inertial>
       <origin xyz="0 0 0"/>
       <mass value="0.01" />
@@ -179,11 +179,11 @@
   <joint name="base_l_wheel_joint" type="continuous">
     <origin xyz="0 0.13 0.015" rpy="0 0 0"/>
     <parent link="base_link"/>
-    <child link="left_wheel_link"/>
+    <child link="base_l_wheel_link"/>
     <axis xyz="0 1 0"/>
   </joint>
 
-  <link name="right_wheel_link">
+  <link name="base_r_wheel_link">
     <inertial>
       <origin xyz="0 0 0"/>
       <mass value="0.01" />
@@ -209,7 +209,7 @@
   <joint name="base_r_wheel_joint" type="continuous">
     <origin xyz="0 -0.13 0.015" rpy="0 0 0"/>
     <parent link="base_link"/>
-    <child link="right_wheel_link"/>
+    <child link="base_r_wheel_link"/>
     <axis xyz="0 1 0"/>
   </joint>
 
@@ -266,7 +266,7 @@
     </collision>
   </link>
 
-  <joint name="front_castor_joint" type="continuous">
+  <joint name="front_castor_joint" type="fixed">
     <origin xyz="0.13 0 0.0" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="front_wheel_link"/>

@@ -10,7 +10,7 @@
   <node name="map_server" pkg="map_server" type="map_server" args="$(find rbx1_nav)/maps/$(arg map)"/>
 
   <!-- Start the move_base node with the nav_test parameters -->
-  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" clear_params="true">
     <rosparam file="$(find rbx1_nav)/config/turtlebot/costmap_common_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find rbx1_nav)/config/turtlebot/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find rbx1_nav)/config/turtlebot/local_costmap_params.yaml" command="load" />

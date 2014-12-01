@@ -29,8 +29,8 @@ from sensor_msgs.msg import JointState
 if __name__ == '__main__':
     rospy.init_node('move_fake_pi_arm_start')
 
-    lift = rospy.Publisher('arm_shoulder_lift_joint/command', Float64)
-    elbow = rospy.Publisher('arm_elbow_flex_joint/command', Float64)
+    lift = rospy.Publisher('arm_shoulder_lift_joint/command', Float64, queue_size=30)
+    elbow = rospy.Publisher('arm_elbow_flex_joint/command', Float64, queue_size=30)
     
     rospy.wait_for_message('joint_states', JointState)
     

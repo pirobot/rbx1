@@ -33,7 +33,7 @@ class OdomEKF():
         rospy.init_node('odom_ekf', anonymous=False)
 
         # Publisher of type nav_msgs/Odometry
-        self.ekf_pub = rospy.Publisher('output', Odometry)
+        self.ekf_pub = rospy.Publisher('output', Odometry, queue_size=30)
         
         # Wait for the /odom_combined topic to become available
         rospy.wait_for_message('input', PoseWithCovarianceStamped)

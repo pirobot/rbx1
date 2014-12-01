@@ -40,7 +40,7 @@ class Video2ROS:
         
         """ Define the image publisher with generic topic name "output" so that it can
             be remapped in the launch file. """
-        image_pub = rospy.Publisher("output", Image)
+        image_pub = rospy.Publisher("output", Image, queue_size=30)
         
         # The target frames per second for the video
         self.fps = rospy.get_param("~fps", 25)

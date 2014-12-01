@@ -83,7 +83,7 @@ class Follower():
         self.move_cmd = Twist()
 
         # Publisher to control the robot's movement
-        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist)
+        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=30)
 
         # Subscribe to the point cloud
         self.depth_subscriber = rospy.Subscriber('point_cloud', PointCloud2, self.set_cmd_vel, queue_size=1)

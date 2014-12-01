@@ -49,7 +49,7 @@ class CalibrateLinear():
         self.start_test = rospy.get_param('~start_test', True)
         
         # Publisher to control the robot's speed
-        self.cmd_vel = rospy.Publisher('/cmd_vel', Twist)
+        self.cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=30)
         
         # Fire up the dynamic_reconfigure server
         dyn_server = Server(CalibrateLinearConfig, self.dynamic_reconfigure_callback)

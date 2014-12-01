@@ -41,7 +41,7 @@ class VoiceNav:
         self.cmd_vel = Twist()
 
         # Publish the Twist message to the cmd_vel topic
-        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist)
+        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=30)
         
         # Subscribe to the /recognizer/output topic to receive voice commands.
         rospy.Subscriber('/recognizer/output', String, self.speech_callback)

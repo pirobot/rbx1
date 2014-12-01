@@ -56,7 +56,7 @@ class ROS2OpenCV2(object):
 
         # Initialize the Region of Interest and its publisher
         self.ROI = RegionOfInterest()
-        self.roi_pub = rospy.Publisher("/roi", RegionOfInterest)
+        self.roi_pub = rospy.Publisher("/roi", RegionOfInterest, queue_size=30)
         
         # Initialize a number of global variables
         self.frame = None

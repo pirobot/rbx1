@@ -106,7 +106,7 @@ class Video2ROS:
             
             # Convert the frame to ROS format
             try:
-                image_pub.publish(bridge.cv_to_imgmsg(cv.fromarray(frame), "bgr8"))
+                image_pub.publish(bridge.cv2_to_imgmsg(frame, "bgr8"))
             except CvBridgeError, e:
                 print e
             

@@ -258,7 +258,7 @@ class ObjectFollower():
         # Use cv_bridge() to convert the ROS image to OpenCV format
         try:
             # The depth image is a single-channel float32 image
-            depth_image = self.cv_bridge.imgmsg_to_cv(ros_image, "32FC1")
+            depth_image = self.cv_bridge.imgmsg_to_cv2(ros_image, "32FC1")
         except CvBridgeError, e:
             print e
 

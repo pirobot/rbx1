@@ -61,7 +61,7 @@ class cvBridgeDemo():
     def image_callback(self, ros_image):
         # Use cv_bridge() to convert the ROS image to OpenCV format
         try:
-            frame = self.bridge.imgmsg_to_cv(ros_image, "bgr8")
+            frame = self.bridge.imgmsg_to_cv2(ros_image, "bgr8")
         except CvBridgeError, e:
             print e
         
@@ -87,7 +87,7 @@ class cvBridgeDemo():
         # Use cv_bridge() to convert the ROS image to OpenCV format
         try:
             # The depth image is a single-channel float32 image
-            depth_image = self.bridge.imgmsg_to_cv(ros_image, "32FC1")
+            depth_image = self.bridge.imgmsg_to_cv2(ros_image, "32FC1")
         except CvBridgeError, e:
             print e
 

@@ -4,7 +4,7 @@ import rospy
 from sensor_msgs.msg import JointState
 
 rospy.init_node("fake_pub")
-p = rospy.Publisher('joint_states', JointState, queue_size=30)
+p = rospy.Publisher('joint_states', JointState, queue_size=5)
 
 msg = JointState()
 msg.name = ["front_castor_joint", "left_wheel_joint", "rear_castor_joint", "right_wheel_joint"]

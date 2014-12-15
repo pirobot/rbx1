@@ -52,7 +52,7 @@ class ObjectTracker():
         self.x_threshold = rospy.get_param("~x_threshold", 0.1)
 
         # Publisher to control the robot's movement
-        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=30)
+        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=5)
         
         # Intialize the movement command
         self.move_cmd = Twist()

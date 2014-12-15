@@ -70,8 +70,8 @@ class MoveBaseSquare():
             p = waypoint.position
             self.markers.points.append(p)
             
-        # Publisher to manually control the robot (e.g. to stop it, queue_size=30)
-        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=30)
+        # Publisher to manually control the robot (e.g. to stop it, queue_size=5)
+        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=5)
         
         # Subscribe to the move_base action server
         self.move_base = actionlib.SimpleActionClient("move_base", MoveBaseAction)
@@ -135,7 +135,7 @@ class MoveBaseSquare():
         marker_color = {'r': 1.0, 'g': 0.7, 'b': 1.0, 'a': 1.0}
         
         # Define a marker publisher.
-        self.marker_pub = rospy.Publisher('waypoint_markers', Marker, queue_size=30)
+        self.marker_pub = rospy.Publisher('waypoint_markers', Marker, queue_size=5)
         
         # Initialize the marker points list.
         self.markers = Marker()

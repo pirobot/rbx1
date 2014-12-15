@@ -63,8 +63,8 @@ class NavTest():
         locations['living_room_2'] = Pose(Point(1.471, 1.007, 0.000), Quaternion(0.000, 0.000, 0.480, 0.877))
         locations['dining_room_1'] = Pose(Point(-0.861, -0.019, 0.000), Quaternion(0.000, 0.000, 0.892, -0.451))
         
-        # Publisher to manually control the robot (e.g. to stop it, queue_size=30)
-        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=30)
+        # Publisher to manually control the robot (e.g. to stop it, queue_size=5)
+        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=5)
         
         # Subscribe to the move_base action server
         self.move_base = actionlib.SimpleActionClient("move_base", MoveBaseAction)

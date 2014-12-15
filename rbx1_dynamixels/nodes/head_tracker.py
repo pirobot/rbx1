@@ -280,7 +280,7 @@ class HeadTracker():
             self.servo_speed[joint](self.default_joint_speed)
 
             # The position controllers
-            self.servo_position[joint] = rospy.Publisher('/' + joint + '/command', Float64, queue_size=30)
+            self.servo_position[joint] = rospy.Publisher('/' + joint + '/command', Float64, queue_size=5)
             
             # A service to enable/disable servo torque
             torque_enable = '/' + joint + '/torque_enable'

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""" timed_out_and_back.py - Version 1.1 2013-12-20
+""" timed_out_and_back.py - Version 1.2 2014-12-14
 
     A basic demo of the using odometry data to move the robot along
     and out-and-back trajectory.
@@ -35,7 +35,7 @@ class OutAndBack():
         rospy.on_shutdown(self.shutdown)
         
         # Publisher to control the robot's speed
-        self.cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=30)
+        self.cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
         
         # How fast will we update the robot's movement?
         rate = 50

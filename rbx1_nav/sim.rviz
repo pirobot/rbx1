@@ -8,7 +8,7 @@ Panels:
         - /Status1
         - /Odometry1
       Splitter Ratio: 0.652661
-    Tree Height: 422
+    Tree Height: 483
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -23,7 +23,10 @@ Panels:
     Name: Views
     Splitter Ratio: 0.5
   - Class: rviz/Time
+    Experimental: false
     Name: Time
+    SyncMode: 0
+    SyncSource: ""
 Visualization Manager:
   Class: ""
   Displays:
@@ -43,7 +46,7 @@ Visualization Manager:
         Z: 0
       Plane: XY
       Plane Cell Count: 20
-      Reference Frame: /odom
+      Reference Frame: odom
       Value: true
     - Angle Tolerance: 0.05
       Class: rviz/Odometry
@@ -70,6 +73,11 @@ Visualization Manager:
       Collision Enabled: false
       Enabled: true
       Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
         base_footprint:
           Alpha: 1
           Show Axes: false
@@ -80,26 +88,54 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        camera_depth_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_depth_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         camera_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        camera_rgb_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_rgb_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         front_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        gyro_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         laser:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        left_cliff_sensor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         left_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        leftfront_cliff_sensor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         plate_0_link:
           Alpha: 1
           Show Axes: false
@@ -125,11 +161,19 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        right_cliff_sensor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         right_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        rightfront_cliff_sensor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         spacer_0_link:
           Alpha: 1
           Show Axes: false
@@ -220,6 +264,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        wall_sensor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
@@ -229,11 +277,13 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 31; 31; 31
-    Fixed Frame: /odom
+    Fixed Frame: odom
+    Frame Rate: 30
   Name: root
   Tools:
     - Class: rviz/MoveCamera
     - Class: rviz/Interact
+      Hide Inactive Objects: true
     - Class: rviz/Select
     - Class: rviz/SetInitialPose
       Topic: /initialpose
@@ -242,15 +292,20 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -1.57
+      Angle: 0
       Class: rviz/TopDownOrtho
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.06
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
       Name: Current View
       Near Clip Distance: 0.01
-      Scale: 178.742
+      Scale: 159.139
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: 0.731489
-      Y: 0.520369
+      X: 0
+      Y: 0
     Saved: ~
 Window Geometry:
   Displays:
@@ -258,7 +313,7 @@ Window Geometry:
   Height: 696
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000012d00000235fc0200000005fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000004100000235000000dd00ffffff000000010000010f00000270fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000002800000270000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004a00000003efc0100000002fb0000000800540069006d00650000000000000004a0000002bf00fffffffb0000000800540069006d00650100000000000004500000000000000000000002890000023500000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000012d00000272fc0200000005fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000002800000272000000dd00ffffff000000010000010f00000270fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000002800000270000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004a00000003efc0100000002fb0000000800540069006d00650000000000000004a0000002f600fffffffb0000000800540069006d00650100000000000004500000000000000000000002990000027200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -268,5 +323,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 972
-  X: 772
-  Y: 332
+  X: 762
+  Y: 322

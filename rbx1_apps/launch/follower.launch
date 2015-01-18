@@ -1,6 +1,6 @@
 <launch>
   <node pkg="rbx1_apps" name="follower" type="follower.py" output="screen">
-    <remap from="point_cloud" to="/camera/depth/points" />
+    <remap from="point_cloud" to="/camera/depth_registered/points" />
     
     <rosparam>
        min_x: -0.3
@@ -9,8 +9,8 @@
        max_y: 0.5
        max_z: 1.6
        goal_z: 0.8
-       z_threshold: 0.05
-       x_threshold: 0.05
+       z_threshold: 0.025
+       x_threshold: 0.025
        z_scale: 1.0
        x_scale: 3.0
        max_angular_speed: 5.0

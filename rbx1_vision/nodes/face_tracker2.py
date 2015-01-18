@@ -203,9 +203,9 @@ class FaceTracker(FaceDetector, LKTracker):
         n_xy = len(self.keypoints)
         n_z = n_xy
         
-        if self.use_depth_for_tracking:
-            if self.depth_image is None:
-                return ((0, 0, 0), 0, 0, -1)
+#         if self.use_depth_for_tracking:
+#             if self.depth_image is None:
+#                 return ((0, 0, 0), 0, 0, -1)
         
         # If there are no keypoints left to track, start over
         if n_xy == 0:
@@ -220,7 +220,7 @@ class FaceTracker(FaceDetector, LKTracker):
         mean_y = sum_y / n_xy
         mean_z = 0
         
-        if self.use_depth_for_tracking:
+        if self.use_depth_for_tracking and not self.depth_image is None:
             for point in self.keypoints:                              
                 try:
                     z = self.depth_image[point[1], point[0]]
@@ -271,7 +271,7 @@ class FaceTracker(FaceDetector, LKTracker):
                 n_xy = n_xy - 1
                                 
         # Now do the same for depth
-        if self.use_depth_for_tracking:
+        if self.use_depth_for_tracking and not self.depth_image is None:
             sse = 0
             for point in keypoints_z:
                 try:

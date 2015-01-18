@@ -53,10 +53,12 @@ class cvBridgeDemo():
         
         # Subscribe to the camera image and depth topics and set
         # the appropriate callbacks
-        self.image_sub = rospy.Subscriber("/camera/rgb/image_color", Image, self.image_callback)
-        self.depth_sub = rospy.Subscriber("/camera/depth/image_raw", Image, self.depth_callback)
+        self.image_sub = rospy.Subscriber("/camera/rgb/image_raw", Image, self.image_callback)
+        self.depth_sub = rospy.Subscriber("/camera/depth_registered/image_raw", Image, self.depth_callback)
         
         rospy.loginfo("Waiting for image topics...")
+        rospy.wait_for_message("camera/rgb/image_raw", Image)
+        rospy.loginfo("Ready.")
 
     def image_callback(self, ros_image):
         # Use cv_bridge() to convert the ROS image to OpenCV format
@@ -65,8 +67,8 @@ class cvBridgeDemo():
         except CvBridgeError, e:
             print e
         
-        # Convert the image to a Numpy array since most cv2 functions
-        # require Numpy arrays.
+        # Convert the image to a numpy array since most cv2 functions
+        # require numpy arrays.
         frame = np.array(frame, dtype=np.uint8)
         
         # Process the frame using the process_image() function
@@ -86,8 +88,8 @@ class cvBridgeDemo():
     def depth_callback(self, ros_image):
         # Use cv_bridge() to convert the ROS image to OpenCV format
         try:
-            # The depth image is a single-channel float32 image
-            depth_image = self.bridge.imgmsg_to_cv2(ros_image, "32FC1")
+            # Convert the depth image using the default passthrough encoding
+            depth_image = self.bridge.imgmsg_to_cv2(ros_image, "passthrough")
         except CvBridgeError, e:
             print e
 

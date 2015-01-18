@@ -69,26 +69,28 @@ class FaceDetector(ROS2OpenCV2):
         self.hit_rate = 0
 
     def process_image(self, cv_image):
-        # Create a greyscale version of the image
-        grey = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-        
-        # Equalize the histogram to reduce lighting effects
-        grey = cv2.equalizeHist(grey)
+        try:
+            # Create a greyscale version of the image
+            grey = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
             
-        # Attempt to detect a face
-        self.detect_box = self.detect_face(grey)
-        
-        # Did we find one?
-        if self.detect_box is not None:
-            self.hits += 1
-        else:
-            self.misses += 1
-        
-        # Keep tabs on the hit rate so far
-        self.hit_rate = float(self.hits) / (self.hits + self.misses)
+            # Equalize the histogram to reduce lighting effects
+            grey = cv2.equalizeHist(grey)
+                
+            # Attempt to detect a face
+            self.detect_box = self.detect_face(grey)
+            
+            # Did we find one?
+            if self.detect_box is not None:
+                self.hits += 1
+            else:
+                self.misses += 1
+            
+            # Keep tabs on the hit rate so far
+            self.hit_rate = float(self.hits) / (self.hits + self.misses)
+        except:
+            pass
                     
         return cv_image
-
 
     def detect_face(self, input_image):
         # First check one of the frontal templates
@@ -127,6 +129,7 @@ class FaceDetector(ROS2OpenCV2):
                         font_face, font_scale, cv.RGB(255, 255, 0))
         
         return face_box
+
         
 def trunc(f, n):
     '''Truncates/pads a float f to n decimal places without rounding'''

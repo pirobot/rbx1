@@ -56,7 +56,7 @@ class ROS2OpenCV2(object):
 
         # Initialize the Region of Interest and its publisher
         self.ROI = RegionOfInterest()
-        self.roi_pub = rospy.Publisher("/roi", RegionOfInterest, queue_size=5)
+        self.roi_pub = rospy.Publisher("/roi", RegionOfInterest, queue_size=1)
         
         # Initialize a number of global variables
         self.frame = None
@@ -286,9 +286,9 @@ class ROS2OpenCV2(object):
     def convert_depth_image(self, ros_image):
         # Use cv_bridge() to convert the ROS image to OpenCV format
         try:
-            depth_image = self.bridge.imgmsg_to_cv2(ros_image, "32FC1")
+            depth_image = self.bridge.imgmsg_to_cv2(ros_image, "passthrough")
             
-            # Convert to a numpy array since this is what OpenCV 2.3 uses
+            # Convert to a numpy array since this is what OpenCV uses
             depth_image = np.array(depth_image, dtype=np.float32)
             
             return depth_image

@@ -52,41 +52,44 @@ class LKTracker(GoodFeatures):
         self.prev_grey = None
             
     def process_image(self, cv_image):
-        # If we don't yet have a detection box (drawn by the user
-        # with the mouse), keep waiting
-        if self.detect_box is None:
-            return cv_image
-
-        # Create a greyscale version of the image
-        self.grey = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-        
-        # Equalize the grey histogram to minimize lighting effects
-        self.grey = cv2.equalizeHist(self.grey)
-        
-        # If we haven't yet started tracking, set the track box to the
-        # detect box and extract the keypoints within it
-        if self.track_box is None or not self.is_rect_nonzero(self.track_box):
-            self.track_box = self.detect_box
-            self.keypoints = self.get_keypoints(self.grey, self.track_box)
-        
-        else:
-            if self.prev_grey is None:
-                self.prev_grey = self.grey
+        try:
+            # If we don't yet have a detection box (drawn by the user
+            # with the mouse), keep waiting
+            if self.detect_box is None:
+                return cv_image
     
-            # Now that have keypoints, track them to the next frame
-            # using optical flow
-            self.track_box = self.track_keypoints(self.grey, self.prev_grey)
-
-        # Process any special keyboard commands for this module
-        if 32 <= self.keystroke and self.keystroke < 128:
-            cc = chr(self.keystroke).lower()
-            if cc == 'c':
-                # Clear the current keypoints
-                self.keypoints = None
-                self.track_box = None
-                self.detect_box = None
-                
-        self.prev_grey = self.grey
+            # Create a greyscale version of the image
+            self.grey = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+            
+            # Equalize the grey histogram to minimize lighting effects
+            self.grey = cv2.equalizeHist(self.grey)
+            
+            # If we haven't yet started tracking, set the track box to the
+            # detect box and extract the keypoints within it
+            if self.track_box is None or not self.is_rect_nonzero(self.track_box):
+                self.track_box = self.detect_box
+                self.keypoints = self.get_keypoints(self.grey, self.track_box)
+            
+            else:
+                if self.prev_grey is None:
+                    self.prev_grey = self.grey
+        
+                # Now that have keypoints, track them to the next frame
+                # using optical flow
+                self.track_box = self.track_keypoints(self.grey, self.prev_grey)
+    
+            # Process any special keyboard commands for this module
+            if 32 <= self.keystroke and self.keystroke < 128:
+                cc = chr(self.keystroke).lower()
+                if cc == 'c':
+                    # Clear the current keypoints
+                    self.keypoints = None
+                    self.track_box = None
+                    self.detect_box = None
+                    
+            self.prev_grey = self.grey
+        except:
+            pass
                 
         return cv_image               
                     

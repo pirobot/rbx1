@@ -1,7 +1,7 @@
 <launch>
   <node pkg="rbx1_vision" name="face_detector" type="face_detector.py" output="screen">
 
-    <remap from="input_rgb_image" to="/camera/rgb/image_color" />
+    <remap from="input_rgb_image" to="/camera/rgb/image_raw" />
     
     <rosparam>
        haar_scaleFactor: 1.3

@@ -1,8 +1,8 @@
 <launch>
   <node pkg="rbx1_vision" name="template_tracker" type="template_tracker.py" output="screen">
 
-    <remap from="input_rgb_image" to="/camera/rgb/image_color" />
-    <remap from="input_depth_image" to="/camera/depth/image" />
+    <remap from="input_rgb_image" to="/camera/rgb/image_raw" />
+    <remap from="input_depth_image" to="/camera/depth/image_rect" />
     
     <rosparam>
       scale_and_rotate: True

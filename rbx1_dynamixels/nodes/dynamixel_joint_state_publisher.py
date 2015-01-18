@@ -32,7 +32,7 @@ class JointStateMessage():
         self.velocity = velocity
         self.effort = effort
 
-class JointStatePublisher(, queue_size=5):
+class JointStatePublisher():
     def __init__(self):
         rospy.init_node('dynamixel_joint_state_publisher', anonymous=True)
         
@@ -58,7 +58,7 @@ class JointStatePublisher(, queue_size=5):
         # Start publisher
         self.joint_states_pub = rospy.Publisher('/joint_states', JointStatePR2, queue_size=5)
        
-        rospy.loginfo("Starting Dynamixel Joint State Publisher at " + str(rate, queue_size=5) + "Hz", queue_size=5)
+        rospy.loginfo("Starting Dynamixel Joint State Publisher at " + str(rate) + "Hz")
        
         while not rospy.is_shutdown():
             self.publish_joint_states()
@@ -88,7 +88,7 @@ class JointStatePublisher(, queue_size=5):
         
 if __name__ == '__main__':
     try:
-        s = JointStatePublisher(, queue_size=5)
+        s = JointStatePublisher()
         rospy.spin()
     except rospy.ROSInterruptException: pass
 

@@ -120,10 +120,11 @@ class HeadTracker():
         
         # Wait until we actually have the camera data
         while self.image_width == 0 or self.image_height == 0:
+            rospy.loginfo(self.image)
             rospy.sleep(1)
             
         # Subscribe to roi topics and set the callback
-        rospy.Subscriber('roi', RegionOfInterest, self.set_joint_cmd)
+        self.roi_subscriber = rospy.Subscriber('roi', RegionOfInterest, self.set_joint_cmd)
         
         rospy.loginfo("Ready to track target.")
                 
@@ -318,7 +319,16 @@ class HeadTracker():
     def shutdown(self):
         rospy.loginfo("Shutting down head tracking node.")
         
+        # Turn off updates from the /roi subscriber
+        try:
+            self.roi_subscriber.unregister()
+        except:
+            pass
+        
+        # Center the servos
         self.center_head_servos()
+        
+        rospy.sleep(2)
         
         # Relax all servos to give them a rest.
         rospy.loginfo("Relaxing pan and tilt servos.")

@@ -82,6 +82,7 @@ class ObjectTracker():
         rospy.Subscriber('roi', RegionOfInterest, self.set_cmd_vel)
         
         # Wait until we have an ROI to follow
+        rospy.loginfo("Waiting for messages on /roi...")
         rospy.wait_for_message('roi', RegionOfInterest)
         
         rospy.loginfo("ROI messages detected. Starting tracker...")

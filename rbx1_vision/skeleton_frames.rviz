@@ -54,37 +54,37 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        head_2:
+        head_1:
           Value: true
-        left_elbow_2:
+        left_elbow_1:
           Value: true
-        left_foot_2:
+        left_foot_1:
           Value: true
-        left_hand_2:
+        left_hand_1:
           Value: true
-        left_hip_2:
+        left_hip_1:
           Value: true
-        left_knee_2:
+        left_knee_1:
           Value: true
-        left_shoulder_2:
+        left_shoulder_1:
           Value: true
-        neck_2:
+        neck_1:
           Value: true
         openni_depth_frame:
           Value: true
-        right_elbow_2:
+        right_elbow_1:
           Value: true
-        right_foot_2:
+        right_foot_1:
           Value: true
-        right_hand_2:
+        right_hand_1:
           Value: true
-        right_hip_2:
+        right_hip_1:
           Value: true
-        right_knee_2:
+        right_knee_1:
           Value: true
-        right_shoulder_2:
+        right_shoulder_1:
           Value: true
-        torso_2:
+        torso_1:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -93,35 +93,35 @@ Visualization Manager:
       Show Names: false
       Tree:
         openni_depth_frame:
-          head_2:
+          head_1:
             {}
-          left_elbow_2:
+          left_elbow_1:
             {}
-          left_foot_2:
+          left_foot_1:
             {}
-          left_hand_2:
+          left_hand_1:
             {}
-          left_hip_2:
+          left_hip_1:
             {}
-          left_knee_2:
+          left_knee_1:
             {}
-          left_shoulder_2:
+          left_shoulder_1:
             {}
-          neck_2:
+          neck_1:
             {}
-          right_elbow_2:
+          right_elbow_1:
             {}
-          right_foot_2:
+          right_foot_1:
             {}
-          right_hand_2:
+          right_hand_1:
             {}
-          right_hip_2:
+          right_hip_1:
             {}
-          right_knee_2:
+          right_knee_1:
             {}
-          right_shoulder_2:
+          right_shoulder_1:
             {}
-          torso_2:
+          torso_1:
             {}
       Update Interval: 0
       Value: true
@@ -145,6 +145,11 @@ Visualization Manager:
     Current:
       Class: rviz/Orbit
       Distance: 2.98777
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.06
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
       Focal Point:
         X: 1.69061
         Y: 0.269926
@@ -172,5 +177,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1047
-  X: 567
-  Y: 118
+  X: 685
+  Y: 366

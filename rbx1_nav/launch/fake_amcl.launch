@@ -14,7 +14,7 @@
   <!-- Run fake localization compatible with AMCL output -->
   <node pkg="fake_localization" type="fake_localization" name="fake_localization" output="screen" />
 
-  <!-- For fake localization we need static transform between /odom and /map -->
+  <!-- For fake localization we need a static transform between /odom and /map -->
   <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" args="0 0 0 0 0 0 /map /odom 100" />
 
 </launch>

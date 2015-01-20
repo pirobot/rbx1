@@ -36,6 +36,6 @@ TrajectoryPlannerROS:
    angular_sim_granularity: 0.1
    vx_samples: 8
    vy_samples: 0  # zero for a differential drive robot
-   vtheta_samples: 40
+   vtheta_samples: 20
    dwa: true
    simple_attractor: false

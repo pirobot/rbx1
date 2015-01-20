@@ -9,7 +9,7 @@
   <node name="map_server" pkg="map_server" type="map_server" args="$(find rbx1_nav)/maps/test_map.yaml"/>
 
   <!-- The move_base node -->
-  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" clear_params="true" output="screen">
     <rosparam file="$(find rbx1_nav)/config/fake/costmap_common_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find rbx1_nav)/config/fake/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find rbx1_nav)/config/fake/local_costmap_params.yaml" command="load" />

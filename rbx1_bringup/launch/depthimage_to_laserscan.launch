@@ -3,6 +3,7 @@
     <remap from="image" to="/camera/depth_registered/image_raw" />
     <remap from="camera_info" to="/camera/depth_registered/camera_info" />
     <remap from="scan" to="/scan" />
+    <param name="output_frame_id" value="/camera_depth_frame" />
   </node>
 
 </launch>

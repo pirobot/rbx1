@@ -78,12 +78,15 @@ class GoodFeatures(ROS2OpenCV2):
                     cv2.circle(self.marker_image, (x, y), self.feature_size, (0, 255, 0, 0), cv.CV_FILLED, 8, 0)
             
             # Process any special keyboard commands
-            if 32 <= self.keystroke and self.keystroke < 128:
-                cc = chr(self.keystroke).lower()
-                if cc == 'c':
-                    # Clear the current keypoints
-                    keypoints = list()
-                    self.detect_box = None
+            if self.keystroke != -1:
+                try:
+                    cc = chr(self.keystroke & 255).lower()
+                    if cc == 'c':
+                        # Clear the current keypoints
+                        keypoints = list()
+                        self.detect_box = None
+                except:
+                    pass
         except:
             pass
                                 

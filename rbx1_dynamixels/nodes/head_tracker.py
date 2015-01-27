@@ -81,7 +81,7 @@ class HeadTracker():
         
         # Monitor the joint states of the pan and tilt servos
         self.joint_state = JointState()
-        rospy.Subscriber('joint_states', JointState, self.update_joint_state)
+        rospy.Subscriber('joint_states', JointState, self.update_joint_state, queue_size=1)
         
         # Wait until we actually have joint state values
         while self.joint_state == JointState():
@@ -116,7 +116,7 @@ class HeadTracker():
 
         # Subscribe to camera_info topics and set the callback
         self.image_width = self.image_height = 0
-        rospy.Subscriber('camera_info', CameraInfo, self.get_camera_info)
+        rospy.Subscriber('camera_info', CameraInfo, self.get_camera_info, queue_size=1)
         
         # Wait until we actually have the camera data
         while self.image_width == 0 or self.image_height == 0:
@@ -124,7 +124,7 @@ class HeadTracker():
             rospy.sleep(1)
             
         # Subscribe to roi topics and set the callback
-        self.roi_subscriber = rospy.Subscriber('roi', RegionOfInterest, self.set_joint_cmd)
+        self.roi_subscriber = rospy.Subscriber('roi', RegionOfInterest, self.set_joint_cmd, queue_size=1)
         
         rospy.loginfo("Ready to track target.")
                 

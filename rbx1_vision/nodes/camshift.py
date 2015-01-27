@@ -63,55 +63,58 @@ class CamShiftNode(ROS2OpenCV2):
 
     # The main processing function computes the histogram and backprojection
     def process_image(self, cv_image):
-        # First blur the image
-        frame = cv2.blur(cv_image, (5, 5))
-        
-        # Convert from RGB to HSV space
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        
-        # Create a mask using the current saturation and value parameters
-        mask = cv2.inRange(hsv, np.array((0., self.smin, self.vmin)), np.array((180., 255., self.vmax)))
-        
-        # If the user is making a selection with the mouse, 
-        # calculate a new histogram to track
-        if self.selection is not None:
-            x0, y0, w, h = self.selection
-            x1 = x0 + w
-            y1 = y0 + h
-            self.track_window = (x0, y0, x1, y1)
-            hsv_roi = hsv[y0:y1, x0:x1]
-            mask_roi = mask[y0:y1, x0:x1]
-            self.hist = cv2.calcHist( [hsv_roi], [0], mask_roi, [16], [0, 180] )
-            cv2.normalize(self.hist, self.hist, 0, 255, cv2.NORM_MINMAX);
-            self.hist = self.hist.reshape(-1)
-            self.show_hist()
-
-        if self.detect_box is not None:
-            self.selection = None
-        
-        # If we have a histogram, track it with CamShift
-        if self.hist is not None:
-            # Compute the backprojection from the histogram
-            backproject = cv2.calcBackProject([hsv], [0], self.hist, [0, 180], 1)
+        try:
+            # First blur the image
+            frame = cv2.blur(cv_image, (5, 5))
             
-            # Mask the backprojection with the mask created earlier
-            backproject &= mask
-
-            # Threshold the backprojection
-            ret, backproject = cv2.threshold(backproject, self.threshold, 255, cv.CV_THRESH_TOZERO)
-
-            x, y, w, h = self.track_window
-            if self.track_window is None or w <= 0 or h <=0:
-                self.track_window = 0, 0, self.frame_width - 1, self.frame_height - 1
+            # Convert from RGB to HSV space
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             
-            # Set the criteria for the CamShift algorithm
-            term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
+            # Create a mask using the current saturation and value parameters
+            mask = cv2.inRange(hsv, np.array((0., self.smin, self.vmin)), np.array((180., 255., self.vmax)))
             
-            # Run the CamShift algorithm
-            self.track_box, self.track_window = cv2.CamShift(backproject, self.track_window, term_crit)
-
-            # Display the resulting backprojection
-            cv2.imshow("Backproject", backproject)
+            # If the user is making a selection with the mouse, 
+            # calculate a new histogram to track
+            if self.selection is not None:
+                x0, y0, w, h = self.selection
+                x1 = x0 + w
+                y1 = y0 + h
+                self.track_window = (x0, y0, x1, y1)
+                hsv_roi = hsv[y0:y1, x0:x1]
+                mask_roi = mask[y0:y1, x0:x1]
+                self.hist = cv2.calcHist( [hsv_roi], [0], mask_roi, [16], [0, 180] )
+                cv2.normalize(self.hist, self.hist, 0, 255, cv2.NORM_MINMAX);
+                self.hist = self.hist.reshape(-1)
+                self.show_hist()
+    
+            if self.detect_box is not None:
+                self.selection = None
+            
+            # If we have a histogram, track it with CamShift
+            if self.hist is not None:
+                # Compute the backprojection from the histogram
+                backproject = cv2.calcBackProject([hsv], [0], self.hist, [0, 180], 1)
+                
+                # Mask the backprojection with the mask created earlier
+                backproject &= mask
+    
+                # Threshold the backprojection
+                ret, backproject = cv2.threshold(backproject, self.threshold, 255, cv.CV_THRESH_TOZERO)
+    
+                x, y, w, h = self.track_window
+                if self.track_window is None or w <= 0 or h <=0:
+                    self.track_window = 0, 0, self.frame_width - 1, self.frame_height - 1
+                
+                # Set the criteria for the CamShift algorithm
+                term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
+                
+                # Run the CamShift algorithm
+                self.track_box, self.track_window = cv2.CamShift(backproject, self.track_window, term_crit)
+    
+                # Display the resulting backprojection
+                cv2.imshow("Backproject", backproject)
+        except:
+            pass
 
         return cv_image
         

@@ -53,11 +53,11 @@ class cvBridgeDemo():
         
         # Subscribe to the camera image and depth topics and set
         # the appropriate callbacks
-        self.image_sub = rospy.Subscriber("/camera/rgb/image_raw", Image, self.image_callback)
-        self.depth_sub = rospy.Subscriber("/camera/depth_registered/image_raw", Image, self.depth_callback)
+        self.image_sub = rospy.Subscriber("input_rgb_image", Image, self.image_callback, queue_size=1)
+        self.depth_sub = rospy.Subscriber("input_depth_image", Image, self.depth_callback, queue_size=1)
         
         rospy.loginfo("Waiting for image topics...")
-        rospy.wait_for_message("camera/rgb/image_raw", Image)
+        rospy.wait_for_message("input_rgb_image", Image)
         rospy.loginfo("Ready.")
 
     def image_callback(self, ros_image):
@@ -78,9 +78,9 @@ class cvBridgeDemo():
         cv2.imshow(self.node_name, display_image)
         
         # Process any keyboard commands
-        self.keystroke = cv.WaitKey(5)
-        if 32 <= self.keystroke and self.keystroke < 128:
-            cc = chr(self.keystroke).lower()
+        self.keystroke = cv2.waitKey(5)
+        if self.keystroke != -1:
+            cc = chr(self.keystroke & 255).lower()
             if cc == 'q':
                 # The user has press the q key, so exit
                 rospy.signal_shutdown("User hit q key to quit.")
@@ -93,8 +93,7 @@ class cvBridgeDemo():
         except CvBridgeError, e:
             print e
 
-        # Convert the depth image to a Numpy array since most cv2 functions
-        # require Numpy arrays.
+        # Convert the depth image to a Numpy array since most cv2 functions require Numpy arrays.
         depth_array = np.array(depth_image, dtype=np.float32)
                 
         # Normalize the depth image to fall between 0 (black) and 1 (white)

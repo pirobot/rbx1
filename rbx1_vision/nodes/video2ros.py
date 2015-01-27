@@ -132,20 +132,23 @@ class Video2ROS:
             self.keystroke = cv.WaitKey(1000 / fps)
 
             """ Process any keyboard commands """
-            if 32 <= self.keystroke and self.keystroke < 128:
-                cc = chr(self.keystroke).lower()
-                if cc == 'q':
-                    """ user has press the q key, so exit """
-                    rospy.signal_shutdown("User hit q key to quit.")
-                elif cc == ' ':
-                    """ Pause or continue the video """
-                    self.paused = not self.paused
-                elif cc == 'r':
-                    """ Restart the video from the beginning """
-                    self.restart = True
-                elif cc == 't':
-                    """ Toggle display of text help message """
-                    self.show_text = not self.show_text        
+            if self.keystroke != -1:
+                try:
+                    cc = chr(self.keystroke & 255).lower()
+                    if cc == 'q':
+                        """ user has press the q key, so exit """
+                        rospy.signal_shutdown("User hit q key to quit.")
+                    elif cc == ' ':
+                        """ Pause or continue the video """
+                        self.paused = not self.paused
+                    elif cc == 'r':
+                        """ Restart the video from the beginning """
+                        self.restart = True
+                    elif cc == 't':
+                        """ Toggle display of text help message """
+                        self.show_text = not self.show_text
+                except:
+                    pass     
         
                     
     def get_frame(self):

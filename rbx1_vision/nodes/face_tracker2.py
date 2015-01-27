@@ -109,14 +109,18 @@ class FaceTracker(FaceDetector, LKTracker):
             self.prev_grey = self.grey
               
             # Process any special keyboard commands for this module
-            if 32 <= self.keystroke and self.keystroke < 128:
-                cc = chr(self.keystroke).lower()
-                if cc == 'c':
-                    self.keypoints = []
-                    self.track_box = None
-                    self.detect_box = None
-                elif cc == 'd':
-                    self.show_add_drop = not self.show_add_drop
+            if self.keystroke != -1:
+                try:
+                    cc = chr(self.keystroke & 255).lower()
+                    print cc
+                    if cc == 'c':
+                        self.keypoints = []
+                        self.track_box = None
+                        self.detect_box = None
+                    elif cc == 'd':
+                        self.show_add_drop = not self.show_add_drop
+                except:
+                    pass
                         
         except AttributeError:
             pass
@@ -228,7 +232,11 @@ class FaceTracker(FaceDetector, LKTracker):
                     n_z = n_z - 1
                     continue        
                 
-                sum_z = sum_z + z
+                if not isnan(z):
+                    sum_z = sum_z + z
+                else:
+                    n_z = n_z - 1
+                    continue
             
             try:
                 mean_z = sum_z / n_z
@@ -312,7 +320,7 @@ class FaceTracker(FaceDetector, LKTracker):
             score = -1
         else:
             score = 1
-
+            
         return ((mean_x, mean_y, mean_z), mse_xy, mse_z, score)
     
 if __name__ == '__main__':

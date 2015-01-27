@@ -24,7 +24,7 @@
 import rospy
 from sensor_msgs.msg import Image, RegionOfInterest, CameraInfo
 from geometry_msgs.msg import Twist
-from math import copysign
+from math import copysign, isnan
 from cv2 import cv as cv
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
@@ -111,7 +111,7 @@ class ObjectFollower():
         rospy.wait_for_message('camera_info', CameraInfo)
         
         # Subscribe to the camera_info topic to get the image width and height
-        rospy.Subscriber('camera_info', CameraInfo, self.get_camera_info)
+        rospy.Subscriber('camera_info', CameraInfo, self.get_camera_info, queue_size=1)
 
         # Wait until we actually have the camera data
         while self.image_width == 0 or self.image_height == 0:
@@ -126,7 +126,7 @@ class ObjectFollower():
         self.depth_subscriber = rospy.Subscriber("depth_image", Image, self.convert_depth_image, queue_size=1)
         
         # Subscribe to the ROI topic and set the callback to update the robot's motion
-        rospy.Subscriber('roi', RegionOfInterest, self.set_cmd_vel)
+        rospy.Subscriber('roi', RegionOfInterest, self.set_cmd_vel, queue_size=1)
         
         # Wait until we have an ROI to follow
         rospy.loginfo("Waiting for an ROI to track...")
@@ -172,7 +172,7 @@ class ObjectFollower():
                 self.target_visible = True
     
             self.roi = msg
-            
+                        
             # Compute the displacement of the ROI from the center of the image
             target_offset_x = msg.x_offset + msg.width / 2 - self.image_width / 2
     
@@ -180,7 +180,7 @@ class ObjectFollower():
                 percent_offset_x = float(target_offset_x) / (float(self.image_width) / 2.0)
             except:
                 percent_offset_x = 0
-            
+                                            
             # Rotate the robot only if the displacement of the target exceeds the threshold
             if abs(percent_offset_x) > self.x_threshold:
                 # Set the rotation speed proportional to the displacement of the target
@@ -209,15 +209,20 @@ class ObjectFollower():
             for x in range(min_x, max_x):
                 for y in range(min_y, max_y):
                     try:
-                        # Get a depth value in millimeters
+                        # Get a depth value in meters
                         z = self.depth_array[y, x]
-                            
-                        # Convert to meters
-                        z /= 1000.0
                         
+                        # Check for NaN values returned by the camera driver
+                        if isnan(z):
+                            continue
+                                                   
                     except:
                         # It seems to work best if we convert exceptions to 0
                         z = 0
+                        
+                    # A hack to convert millimeters to meters for the freenect driver
+                    if z > 100:
+                        z /= 1000.0
                         
                     # Check for values outside max range
                     if z > self.max_z:
@@ -233,7 +238,7 @@ class ObjectFollower():
             # If we have depth values...
             if n_z:
                 mean_z = float(sum_z) / n_z
-                
+                                                                                                
                 # Don't let the mean fall below the minimum reliable range
                 mean_z = max(self.min_z, mean_z)
                                                         

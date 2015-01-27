@@ -79,13 +79,16 @@ class LKTracker(GoodFeatures):
                 self.track_box = self.track_keypoints(self.grey, self.prev_grey)
     
             # Process any special keyboard commands for this module
-            if 32 <= self.keystroke and self.keystroke < 128:
-                cc = chr(self.keystroke).lower()
-                if cc == 'c':
-                    # Clear the current keypoints
-                    self.keypoints = None
-                    self.track_box = None
-                    self.detect_box = None
+            if self.keystroke != -1:
+                try:
+                    cc = chr(self.keystroke & 255).lower()
+                    if cc == 'c':
+                        # Clear the current keypoints
+                        self.keypoints = None
+                        self.track_box = None
+                        self.detect_box = None
+                except:
+                    pass
                     
             self.prev_grey = self.grey
         except:

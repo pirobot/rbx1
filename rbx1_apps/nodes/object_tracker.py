@@ -72,14 +72,14 @@ class ObjectTracker():
         rospy.wait_for_message('camera_info', CameraInfo)
         
         # Subscribe the camera_info topic to get the image width and height
-        rospy.Subscriber('camera_info', CameraInfo, self.get_camera_info)
+        rospy.Subscriber('camera_info', CameraInfo, self.get_camera_info, queue_size=1)
 
         # Wait until we actually have the camera data
         while self.image_width == 0 or self.image_height == 0:
             rospy.sleep(1)
                     
         # Subscribe to the ROI topic and set the callback to update the robot's motion
-        rospy.Subscriber('roi', RegionOfInterest, self.set_cmd_vel)
+        rospy.Subscriber('roi', RegionOfInterest, self.set_cmd_vel, queue_size=1)
         
         # Wait until we have an ROI to follow
         rospy.loginfo("Waiting for messages on /roi...")

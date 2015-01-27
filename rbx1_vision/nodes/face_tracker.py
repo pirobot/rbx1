@@ -73,12 +73,15 @@ class FaceTracker(FaceDetector, LKTracker):
                     self.detect_box = None
             
             # Process any special keyboard commands for this module
-            if 32 <= self.keystroke and self.keystroke < 128:
-                cc = chr(self.keystroke).lower()
-                if cc == 'c':
-                    self.keypoints = list()
-                    self.track_box = None
-                    self.detect_box = None
+            if self.keystroke != -1:
+                try:
+                    cc = chr(self.keystroke & 255).lower()
+                    if cc == 'c':
+                        self.keypoints = list()
+                        self.track_box = None
+                        self.detect_box = None
+                except:
+                    pass
     
             # Set store a copy of the current image used for LK tracking         
             self.prev_grey = self.grey

@@ -1,6 +1,6 @@
 <launch>
   <node pkg="rbx1_apps" name="follower" type="follower.py" output="screen">
-    <remap from="point_cloud" to="/camera/depth_registered/points" />
+    <remap from="point_cloud" to="/camera/depth/points" />
     
     <rosparam>
        min_x: -0.3

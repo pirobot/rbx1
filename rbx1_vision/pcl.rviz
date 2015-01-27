@@ -7,11 +7,9 @@ Panels:
         - /Global Options1
         - /Status1
         - /Original PointCloud1
-        - /PassThrough1
         - /PassThrough1/Autocompute Value Bounds1
         - /PassThrough1/Use rainbow1
         - /PassThrough1/Autocompute Intensity Bounds1
-        - /VoxelGrid1
       Splitter Ratio: 0.5
     Tree Height: 507
   - Class: rviz/Selection
@@ -56,8 +54,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 0.949606
-        Min Value: -1.89528
+        Max Value: 0.775931
+        Min Value: -0.36432
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -85,8 +83,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 0.13619
-        Min Value: -0.0333333
+        Max Value: 0.347271
+        Min Value: -0.35091
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -114,8 +112,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 1.41821
-        Min Value: -0.767951
+        Max Value: 0.762265
+        Min Value: -0.355383
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -171,10 +169,10 @@ Visualization Manager:
         Z: 0.111008
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.044807
+      Pitch: 0.224807
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.14223
+      Yaw: 3.59723
     Saved: ~
 Window Geometry:
   Displays:
@@ -192,5 +190,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1016
-  X: 857
+  X: 847
   Y: 14

@@ -91,9 +91,7 @@ class ROS2OpenCV2(object):
         cv.NamedWindow(self.cv_window_name, cv.CV_WINDOW_NORMAL)
         if self.resize_window_height > 0 and self.resize_window_width > 0:
             cv.ResizeWindow(self.cv_window_name, self.resize_window_width, self.resize_window_height)
-        else:
-            cv.ResizeWindow(self.cv_window_name, 640, 480)
-        
+
         # Create the cv_bridge object
         self.bridge = CvBridge()
         
@@ -102,8 +100,8 @@ class ROS2OpenCV2(object):
         
         # Subscribe to the image and depth topics and set the appropriate callbacks
         # The image topic names can be remapped in the appropriate launch file
-        self.image_sub = rospy.Subscriber("input_rgb_image", Image, self.image_callback)
-        self.depth_sub = rospy.Subscriber("input_depth_image", Image, self.depth_callback)
+        self.image_sub = rospy.Subscriber("input_rgb_image", Image, self.image_callback, queue_size=1)
+        self.depth_sub = rospy.Subscriber("input_depth_image", Image, self.depth_callback, queue_size=1)
                                     
     def on_mouse_click(self, event, x, y, flags, param):
         # This function allows the user to selection a ROI using the mouse
@@ -246,19 +244,23 @@ class ROS2OpenCV2(object):
         cv2.imshow(self.node_name, self.display_image)
         
         # Process any keyboard commands
-        if 32 <= self.keystroke and self.keystroke < 128:
-            cc = chr(self.keystroke).lower()
-            if cc == 'n':
-                self.night_mode = not self.night_mode
-            elif cc == 'f':
-                self.show_features = not self.show_features
-            elif cc == 'b':
-                self.show_boxes = not self.show_boxes
-            elif cc == 't':
-                self.show_text = not self.show_text
-            elif cc == 'q':
-                # The has press the q key, so exit
-                rospy.signal_shutdown("User hit q key to quit.")
+        self.keystroke = cv2.waitKey(5)
+        if self.keystroke != -1:
+            try:
+                cc = chr(self.keystroke & 255).lower()
+                if cc == 'n':
+                    self.night_mode = not self.night_mode
+                elif cc == 'f':
+                    self.show_features = not self.show_features
+                elif cc == 'b':
+                    self.show_boxes = not self.show_boxes
+                elif cc == 't':
+                    self.show_text = not self.show_text
+                elif cc == 'q':
+                    # The has press the q key, so exit
+                    rospy.signal_shutdown("User hit q key to quit.")
+            except:
+                pass
                 
     def depth_callback(self, data):
         # Convert the ROS image to OpenCV format using a cv_bridge helper function

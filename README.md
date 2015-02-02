@@ -8,5 +8,5 @@ The code in this branch is for **ROS Indigo**.
 
 If you are still using ROS Hydro, please use the hydro-devel branch of this repository.
 
-If you are still using ROS Electric or Fuerte, please refer to the original [SVN repository on Google Code](https://code.google.com/p/ros-by-example/).
+If you are still using ROS Groovy, please use the groovy-devel branch of this repository.
 

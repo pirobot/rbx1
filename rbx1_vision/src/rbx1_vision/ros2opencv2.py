@@ -52,7 +52,7 @@ class ROS2OpenCV2(object):
         self.show_features = rospy.get_param("~show_features", True)
         self.show_boxes = rospy.get_param("~show_boxes", True)
         self.flip_image = rospy.get_param("~flip_image", False)
-        self.feature_size = rospy.get_param("~feature_size", False)
+        self.feature_size = rospy.get_param("~feature_size", 1)
 
         # Initialize the Region of Interest and its publisher
         self.ROI = RegionOfInterest()

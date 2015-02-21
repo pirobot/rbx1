@@ -15,7 +15,7 @@
         <param name="brightness" value="32" />
         <param name="saturation" value="32" />
         <param name="autofocus" value="true" />
-        <param name="camera_frame_id" value="head_cam" />
+        <param name="camera_frame_id" value="camera_link" />
         
     </node>
 </launch>

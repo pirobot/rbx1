@@ -1,4 +1,4 @@
-![alt text](http://www.pirobot.org/images/rbx_thumbnail.png)
+<img src="http://www.pirobot.org/images/rbx_thumbnail.png" align="left" hspace="10px">
 
 This ROS stack provides sample code used in the book *ROS by Example* [available on Lulu.com](http://www.lulu.com/spotlight/pirobot).
 

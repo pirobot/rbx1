@@ -209,9 +209,6 @@ class ROS2OpenCV2(object):
         
         # Publish the ROI
         self.publish_roi()
-        
-        # Handle keyboard events
-        self.keystroke = cv.WaitKey(5)
             
         # Compute the time for this loop and estimate CPS as a running average
         end = time.time()
@@ -245,7 +242,7 @@ class ROS2OpenCV2(object):
         
         # Process any keyboard commands
         self.keystroke = cv2.waitKey(5)
-        if self.keystroke != -1:
+        if self.keystroke is not None and self.keystroke != -1:
             try:
                 cc = chr(self.keystroke & 255).lower()
                 if cc == 'n':

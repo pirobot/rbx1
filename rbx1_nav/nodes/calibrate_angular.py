@@ -40,14 +40,14 @@ class CalibrateAngular():
         rospy.on_shutdown(self.shutdown)
         
         # How fast will we check the odometry values?
-        self.rate = 30
+        self.rate = rospy.get_param('~rate', 20)
         r = rospy.Rate(self.rate)
         
         # The test angle is 360 degrees
         self.test_angle = radians(rospy.get_param('~test_angle', 360.0))
 
-        self.speed = rospy.get_param('~speed', 0.7) # radians per second
-        self.tolerance = rospy.get_param('tolerance', radians(5)) # degrees converted to radians
+        self.speed = rospy.get_param('~speed', 0.5) # radians per second
+        self.tolerance = radians(rospy.get_param('tolerance', 1)) # degrees converted to radians
         self.odom_angular_scale_correction = rospy.get_param('~odom_angular_scale_correction', 1.0)
         self.start_test = rospy.get_param('~start_test', True)
         
@@ -60,7 +60,7 @@ class CalibrateAngular():
         # Connect to the dynamic_reconfigure server
         dyn_client = dynamic_reconfigure.client.Client("calibrate_angular", timeout=60)
         
-        # The base frame is base_footprint for the TurtleBot but base_link for Pi Robot
+        # The base frame is usually base_link or base_footprint
         self.base_frame = rospy.get_param('~base_frame', '/base_link')
 
         # The odom frame is usually just /odom
@@ -80,24 +80,25 @@ class CalibrateAngular():
         reverse = 1
         
         while not rospy.is_shutdown():
-            # Execute the rotation
-
             if self.start_test:
                 # Get the current rotation angle from tf
                 self.odom_angle = self.get_odom_angle()
                 
                 last_angle = self.odom_angle
                 turn_angle = 0
-                
+                self.test_angle *= reverse
+                error = self.test_angle - turn_angle
+                                
                 # Alternate directions between tests
                 reverse = -reverse
-                angular_speed  = reverse * self.speed
                 
-                while abs(turn_angle) < abs(self.test_angle):
+                while abs(error) > self.tolerance and self.start_test:
                     if rospy.is_shutdown():
                         return
+                    
+                    # Rotate the robot to reduce the error
                     move_cmd = Twist()
-                    move_cmd.angular.z = angular_speed
+                    move_cmd.angular.z = copysign(self.speed, error)
                     self.cmd_vel.publish(move_cmd)
                     r.sleep()
                  
@@ -109,8 +110,9 @@ class CalibrateAngular():
                     
                     # Add to our total angle so far
                     turn_angle += delta_angle
+                    error = self.test_angle - turn_angle
                     last_angle = self.odom_angle
-                
+                                    
                 # Stop the robot
                 self.cmd_vel.publish(Twist())
                 
@@ -119,7 +121,7 @@ class CalibrateAngular():
                 params = {'start_test': False}
                 dyn_client.update_configuration(params)
                 
-            rospy.sleep(0.5) 
+            rospy.sleep(0.5)
                     
         # Stop the robot
         self.cmd_vel.publish(Twist())

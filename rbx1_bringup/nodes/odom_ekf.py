@@ -46,6 +46,7 @@ class OdomEKF():
     def pub_ekf_odom(self, msg):
         odom = Odometry()
         odom.header = msg.header
+        odom.header.frame_id = '/odom'
         odom.child_frame_id = 'base_footprint'
         odom.pose = msg.pose
         

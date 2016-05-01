@@ -45,17 +45,17 @@ class OutAndBack():
         # Set the equivalent ROS rate variable
         r = rospy.Rate(rate)
         
-        # Set the forward linear speed to 0.2 meters per second 
-        linear_speed = 0.2
+        # Set the forward linear speed to 0.15 meters per second 
+        linear_speed = 0.15
         
         # Set the travel distance in meters
         goal_distance = 1.0
 
         # Set the rotation speed in radians per second
-        angular_speed = 1.0
+        angular_speed = 0.5
         
         # Set the angular tolerance in degrees converted to radians
-        angular_tolerance = radians(2.5)
+        angular_tolerance = radians(1.0)
         
         # Set the rotation angle to Pi radians (180 degrees)
         goal_angle = pi

@@ -110,7 +110,11 @@ class CalibrateAngular():
                     
                     # Add to our total angle so far
                     turn_angle += delta_angle
+
+                    # Compute the new error
                     error = self.test_angle - turn_angle
+
+                    # Store the current angle for the next comparison
                     last_angle = self.odom_angle
                                     
                 # Stop the robot

@@ -120,7 +120,6 @@ class HeadTracker():
         
         # Wait until we actually have the camera data
         while self.image_width == 0 or self.image_height == 0:
-            rospy.loginfo(self.image)
             rospy.sleep(1)
             
         # Subscribe to roi topics and set the callback

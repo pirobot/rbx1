@@ -1,4 +1,4 @@
-#!/binsh
+#!/bin/sh
 
 # Install the prerequisites for the ROS By Example code, Volume 1
 

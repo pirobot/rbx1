@@ -85,18 +85,20 @@ class ROS2OpenCV2(object):
         self.resize_window_width = 0
         self.resize_window_height = 0
         self.face_tracking = False
+        self.show_image = True
         
         # Create the main display window
-        self.cv_window_name = self.node_name
-        cv2.namedWindow(self.cv_window_name, cv.WINDOW_NORMAL)
-        if self.resize_window_height > 0 and self.resize_window_width > 0:
-            cv.ResizeWindow(self.cv_window_name, self.resize_window_width, self.resize_window_height)
+        if self.show_image:
+            self.cv_window_name = self.node_name
+            cv2.namedWindow(self.cv_window_name, cv.WINDOW_NORMAL)
+            if self.resize_window_height > 0 and self.resize_window_width > 0:
+                cv.ResizeWindow(self.cv_window_name, self.resize_window_width, self.resize_window_height)
 
-        # Create the cv_bridge object
+            # Set a call back on mouse clicks on the image window
+            cv2.setMouseCallback (self.node_name, self.on_mouse_click, None)
+
+        # create the cv_bridge object
         self.bridge = CvBridge()
-        
-        # Set a call back on mouse clicks on the image window
-        cv2.setMouseCallback (self.node_name, self.on_mouse_click, None)
         
         # Subscribe to the image and depth topics and set the appropriate callbacks
         # The image topic names can be remapped in the appropriate launch file
@@ -238,29 +240,29 @@ class ROS2OpenCV2(object):
             cv2.putText(self.display_image, "RES: " + str(self.frame_size[0]) + "X" + str(self.frame_size[1]), (10, voffset), font_face, font_scale, (255, 255, 0))
                
     def show_image(self, window_name, display_image):
-         # Update the image display
-        cv2.imshow(window_name, display_image)
-        
-        self.keystroke = cv2.waitKey(5)
-        
-        # Process any keyboard commands
-        if self.keystroke is not None and self.keystroke != -1:
-            try:
-                cc = chr(self.keystroke & 255).lower()
-                if cc == 'n':
-                    self.night_mode = not self.night_mode
-                elif cc == 'f':
-                    self.show_features = not self.show_features
-                elif cc == 'b':
-                    self.show_boxes = not self.show_boxes
-                elif cc == 't':
-                    self.show_text = not self.show_text
-                elif cc == 'q':
-                    # The has press the q key, so exit
-                    rospy.signal_shutdown("User hit q key to quit.")
-            except:
-                pass
+        # Update the image display
+        if self.show_image:
+            cv2.imshow(window_name, display_image)
             
+            self.keystroke = cv2.waitKey(5)
+        
+            # Process any keyboard commands
+            if self.keystroke is not None and self.keystroke != -1:
+                try:
+                    cc = chr(self.keystroke & 255).lower()
+                    if cc == 'n':
+                        self.night_mode = not self.night_mode
+                    elif cc == 'f':
+                        self.show_features = not self.show_features
+                    elif cc == 'b':
+                        self.show_boxes = not self.show_boxes
+                    elif cc == 't':
+                        self.show_text = not self.show_text
+                    elif cc == 'q':
+                        # The has press the q key, so exit
+                        rospy.signal_shutdown("User hit q key to quit.")
+                except:
+                    pass
                 
     def depth_callback(self, data):
         # Convert the ROS image to OpenCV format using a cv_bridge helper function
@@ -387,7 +389,8 @@ class ROS2OpenCV2(object):
         
     def cleanup(self):
         print "Shutting down vision node."
-        cv2.destroyAllWindows()       
+        if self.show_image:
+            cv2.destroyAllWindows()       
 
 def main(args):    
     try:

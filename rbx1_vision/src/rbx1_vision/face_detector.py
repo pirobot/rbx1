@@ -24,25 +24,25 @@
 
 import rospy
 import cv2
-import cv2.cv as cv
+import cv2 as cv
 from rbx1_vision.ros2opencv2 import ROS2OpenCV2
 
 class FaceDetector(ROS2OpenCV2):
     def __init__(self, node_name):
         super(FaceDetector, self).__init__(node_name)
-                  
+                          
         # Get the paths to the cascade XML files for the Haar detectors.
         # These are set in the launch file.
         cascade_1 = rospy.get_param("~cascade_1", "")
         cascade_2 = rospy.get_param("~cascade_2", "")
         cascade_3 = rospy.get_param("~cascade_3", "")
-        
+                
         # Initialize the Haar detectors using the cascade files
         self.cascade_1 = cv2.CascadeClassifier(cascade_1)
         self.cascade_2 = cv2.CascadeClassifier(cascade_2)
         self.cascade_3 = cv2.CascadeClassifier(cascade_3)
         
-        # Set cascade parameters that tend to work well for faces.
+        # Set cascade parameters tha tend to work well for faces.
         # Can be overridden in launch file
         self.haar_scaleFactor = rospy.get_param("~haar_scaleFactor", 1.3)
         self.haar_minNeighbors = rospy.get_param("~haar_minNeighbors", 3)
@@ -52,7 +52,6 @@ class FaceDetector(ROS2OpenCV2):
         # Store all parameters together for passing to the detector
         self.haar_params = dict(scaleFactor = self.haar_scaleFactor,
                                 minNeighbors = self.haar_minNeighbors,
-                                flags = cv.CV_HAAR_DO_CANNY_PRUNING,
                                 minSize = (self.haar_minSize, self.haar_minSize),
                                 maxSize = (self.haar_maxSize, self.haar_maxSize)
                                 )
@@ -87,8 +86,8 @@ class FaceDetector(ROS2OpenCV2):
             
             # Keep tabs on the hit rate so far
             self.hit_rate = float(self.hits) / (self.hits + self.misses)
-        except:
-            pass
+        except Exception as e:
+            print e
                     
         return cv_image
 
@@ -116,7 +115,7 @@ class FaceDetector(ROS2OpenCV2):
                 font_scale = 0.5
                 cv2.putText(self.marker_image, "LOST FACE!", 
                             (int(self.frame_size[0] * 0.65), int(self.frame_size[1] * 0.9)), 
-                            font_face, font_scale, cv.RGB(255, 50, 50))
+                            font_face, font_scale, (255, 50, 50))
             face_box = None
 
         # Display the hit rate so far
@@ -126,7 +125,7 @@ class FaceDetector(ROS2OpenCV2):
             cv2.putText(self.marker_image, "Hit Rate: " + 
                         str(trunc(self.hit_rate, 2)), 
                         (20, int(self.frame_size[1] * 0.9)), 
-                        font_face, font_scale, cv.RGB(255, 255, 0))
+                        font_face, font_scale, (255, 255, 0))
         
         return face_box
 
@@ -139,8 +138,12 @@ def trunc(f, n):
 if __name__ == '__main__':
     try:
         node_name = "face_detector"
-        FaceDetector(node_name)
-        rospy.spin()
+        face_detector = FaceDetector(node_name)
+        
+        while not rospy.is_shutdown():
+            if face_detector.display_image is not None:
+                face_detector.show_image(self.cv_window_name, face_detector.display_image)
+                
     except KeyboardInterrupt:
         print "Shutting down face detector node."
         cv2.destroyAllWindows()

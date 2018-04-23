@@ -8,7 +8,7 @@
 """
 import cv2.cv as cv
 import cv2
-import numpy as np
+#import numpy as np
 from time import clock
 
 help_message = '''USAGE: pyrdown.py [<template_image>] [<test_image>] [<n_pyr>]
@@ -129,7 +129,8 @@ if __name__ == '__main__':
             result = cv2.matchTemplate(image_copy, template_copy, cv2.TM_CCOEFF_NORMED)
             
             # Squaring (or even cubing) the result exaggerates the differences
-            display_result = np.abs(result)**2
+            #display_result = np.abs(result)**2
+            display_result = result
             
             # Then do a sub-maximal suppression to emphasize the peaks
             #val, result = cv2.threshold(result, 0.01, 0, cv2.THRESH_TOZERO)

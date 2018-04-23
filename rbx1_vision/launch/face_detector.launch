@@ -1,5 +1,5 @@
 <launch>
-  <node pkg="rbx1_vision" name="face_detector" type="face_detector.py" output="screen">
+  <node pkg="rbx1_vision" name="face_detector" type="face_detector.py" clear_params="true" output="screen">
 
     <remap from="input_rgb_image" to="/camera/rgb/image_raw" />
     

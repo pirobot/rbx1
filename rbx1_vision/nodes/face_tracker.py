@@ -23,7 +23,7 @@
 
 import rospy
 import cv2
-import cv2.cv as cv
+import cv2 as cv
 import numpy as np
 from rbx1_vision.face_detector import FaceDetector
 from rbx1_vision.lk_tracker import LKTracker
@@ -94,8 +94,12 @@ class FaceTracker(FaceDetector, LKTracker):
 if __name__ == '__main__':
     try:
         node_name = "face_tracker"
-        FaceTracker(node_name)
-        rospy.spin()
+        face_tracker = FaceTracker(node_name)
+        
+        while not rospy.is_shutdown():
+            if face_tracker.display_image is not None:
+                face_tracker.show_image(face_tracker.cv_window_name, face_tracker.display_image)
+                
     except KeyboardInterrupt:
         print "Shutting down face tracker node."
         cv.DestroyAllWindows()

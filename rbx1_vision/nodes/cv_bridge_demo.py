@@ -25,7 +25,7 @@
 import rospy
 import sys
 import cv2
-import cv2.cv as cv
+import cv2 as cv
 from sensor_msgs.msg import Image, CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
@@ -39,26 +39,47 @@ class cvBridgeDemo():
         # What we do during shutdown
         rospy.on_shutdown(self.cleanup)
         
-        # Create the OpenCV display window for the RGB image
-        self.cv_window_name = self.node_name
-        cv.NamedWindow(self.cv_window_name, cv.CV_WINDOW_NORMAL)
-        cv.MoveWindow(self.cv_window_name, 25, 75)
+        self.rgb_image = None
+        self.depth_image = None
         
+        # Create the OpenCV display window for the RGB image
+        self.rgb_window_name = self.node_name
+        cv.namedWindow(self.rgb_window_name, cv.WINDOW_NORMAL)
+        cv.moveWindow(self.rgb_window_name, 25, 75)
+                
         # And one for the depth image
-        cv.NamedWindow("Depth Image", cv.CV_WINDOW_NORMAL)
-        cv.MoveWindow("Depth Image", 25, 350)
+        self.depth_window_name = "Depth Image"
+
+        cv.namedWindow(self.depth_window_name, cv.WINDOW_NORMAL)
+        cv.moveWindow(self.depth_window_name, 25, 350)
         
         # Create the cv_bridge object
         self.bridge = CvBridge()
         
-        # Subscribe to the camera image and depth topics and set
-        # the appropriate callbacks
+        rospy.loginfo("Waiting for image topics...")
+        rospy.wait_for_message("input_rgb_image", Image)
+        
+        # Subscribe to the camera image and depth topics and set he appropriate callbacks
         self.image_sub = rospy.Subscriber("input_rgb_image", Image, self.image_callback, queue_size=1)
         self.depth_sub = rospy.Subscriber("input_depth_image", Image, self.depth_callback, queue_size=1)
         
-        rospy.loginfo("Waiting for image topics...")
-        rospy.wait_for_message("input_rgb_image", Image)
         rospy.loginfo("Ready.")
+        
+        while not rospy.is_shutdown():
+            if not self.rgb_image is None:
+                cv2.imshow(self.rgb_window_name, self.rgb_image)
+                      
+                # Process any keyboard commands
+                self.keystroke = cv2.waitKey(5)
+                         
+                if self.keystroke != -1:
+                    cc = chr(self.keystroke & 255).lower()
+                    if cc == 'q':
+                        # The user has press the q key, so exit
+                        rospy.signal_shutdown("User hit q key to quit.")
+                
+            if not self.depth_image is None:
+                cv2.imshow(self.depth_window_name, self.depth_image)                
 
     def image_callback(self, ros_image):
         # Use cv_bridge() to convert the ROS image to OpenCV format
@@ -66,24 +87,14 @@ class cvBridgeDemo():
             frame = self.bridge.imgmsg_to_cv2(ros_image, "bgr8")
         except CvBridgeError, e:
             print e
-        
+                    
         # Convert the image to a numpy array since most cv2 functions
         # require numpy arrays.
         frame = np.array(frame, dtype=np.uint8)
         
         # Process the frame using the process_image() function
-        display_image = self.process_image(frame)
-                       
-        # Display the image.
-        cv2.imshow(self.node_name, display_image)
-        
-        # Process any keyboard commands
-        self.keystroke = cv2.waitKey(5)
-        if self.keystroke != -1:
-            cc = chr(self.keystroke & 255).lower()
-            if cc == 'q':
-                # The user has press the q key, so exit
-                rospy.signal_shutdown("User hit q key to quit.")
+        self.rgb_image = self.process_image(frame)        
+                
                 
     def depth_callback(self, ros_image):
         # Use cv_bridge() to convert the ROS image to OpenCV format
@@ -100,14 +111,12 @@ class cvBridgeDemo():
         cv2.normalize(depth_array, depth_array, 0, 1, cv2.NORM_MINMAX)
         
         # Process the depth image
-        depth_display_image = self.process_depth_image(depth_array)
-    
-        # Display the result
-        cv2.imshow("Depth Image", depth_display_image)
+        self.depth_image = self.process_depth_image(depth_array)
+
           
     def process_image(self, frame):
         # Convert to greyscale
-        grey = cv2.cvtColor(frame, cv.CV_BGR2GRAY)
+        grey = cv2.cvtColor(frame, cv.COLOR_BGR2GRAY)
         
         # Blur the image
         grey = cv2.blur(grey, (7, 7))

@@ -14,6 +14,7 @@
       max_mse: 10000
       add_keypoints_interval: 1
       drop_keypoints_interval: 1
+      show_image: True
       show_text: True
       show_features: True
       show_add_drop: False

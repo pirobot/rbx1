@@ -1,0 +1,14 @@
+rbx1_experimental
+bin/
+build/
+include/
+ros_arduino_msgs/src/
+msg_gen/
+srv_gen/
+*~
+.*~
+*.pyc
+*.cfgc
+.project
+.pydevproject
+

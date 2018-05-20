@@ -142,7 +142,7 @@ if __name__ == '__main__':
         
         while not rospy.is_shutdown():
             if face_detector.display_image is not None:
-                face_detector.show_image(self.cv_window_name, face_detector.display_image)
+                face_detector.show_image(face_detector.cv_window_name, face_detector.display_image)
                 
     except KeyboardInterrupt:
         print "Shutting down face detector node."

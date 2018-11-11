@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 
 <robot name="head" xmlns:xacro="http://ros.org/wiki/xacro">
-  <property name="MESH_SCALE" value="100"/>
+  <xacro:property name="MESH_SCALE" value="100"/>
 
   <xacro:include filename="$(find rbx1_description)/urdf/head_hardware.xacro" />
 
-  <macro name="turtlebot_head" params="parent color *origin"> 
+  <xacro:macro name="turtlebot_head" params="parent color *origin"> 
     <link name="head_base_link" />     
     <joint name="head_base_joint" type="fixed">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="head_base_link" />
     </joint>
@@ -194,6 +194,6 @@
     <origin xyz="-0.005 -0.035 0" rpy="0 0 0" />
   </joint>
 
- </macro>
+ </xacro:macro>
 
 </robot>

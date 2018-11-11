@@ -13,10 +13,10 @@
     <color rgba="0.22 0.32 0.14 1.0"/>
   </material>
 
-  <macro name="turtlebot_arm" params="parent color gripper_color *origin"> 
+  <xacro:macro name="turtlebot_arm" params="parent color gripper_color *origin"> 
     <link name="arm_base_link" />     
     <joint name="arm_base_joint" type="fixed">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="arm_base_link" />
     </joint>
@@ -61,6 +61,6 @@
     <!--finger 2-->
     <bioloid_F3_fixed parent="dynamixel_AX12_4_link" number="4" x_loc="0" y_loc="0" z_loc="${-AX12_HEIGHT-F10_HEIGHT+0.001}" r="0" p="${M_PI}" y="0" color="${color}"/>
     <finger_fixed parent="bioloid_F3_4_link" number="1" x_loc="0" y_loc="0" z_loc="0" r="0" p="0" y="${M_PI}" color="${gripper_color}"/>
-  </macro>
+  </xacro:macro>
 
 </robot>

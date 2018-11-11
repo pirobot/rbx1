@@ -6,9 +6,9 @@
        xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
        xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <property name="PI_ROBOT_SCALE" value="0.0254"/>
-  <property name="MESH_SCALE" value="100"/>
-  <property name="GROUND_CLEARANCE" value="0.073" />
+  <xacro:property name="PI_ROBOT_SCALE" value="0.0254"/>
+  <xacro:property name="MESH_SCALE" value="100"/>
+  <xacro:property name="GROUND_CLEARANCE" value="0.073" />
   
   <xacro:include filename="$(find rbx1_description)/urdf/pi_robot_head.xacro" />
   <xacro:include filename="$(find rbx1_description)/urdf/pi_robot_arm.xacro" />

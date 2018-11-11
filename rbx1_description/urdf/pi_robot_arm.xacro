@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <robot name="pi_robot_arm" xmlns:xacro="http://ros.org/wiki/xacro">
-  <property name="MESH_SCALE" value="100"/>
+  <xacro:property name="MESH_SCALE" value="100"/>
 
   <xacro:include filename="$(find rbx1_description)/urdf/pi_robot_arm_hardware.xacro" />
 
@@ -15,10 +15,10 @@
     <color rgba="0.22 0.32 0.14 1.0"/>
   </material>
 
-  <macro name="pi_robot_arm" params="parent color gripper_color *origin"> 
+  <xacro:macro name="pi_robot_arm" params="parent color gripper_color *origin"> 
     <link name="arm_base_link" />     
     <joint name="arm_base_joint" type="fixed">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="arm_base_link" />
     </joint>
@@ -137,6 +137,6 @@
       <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
     </finger_fixed>
 
-  </macro>
+  </xacro:macro>
 
 </robot>

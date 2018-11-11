@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 <robot name="pi_robot_arm_hardware" xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <property name="M_PI" value="3.14159"/>
-  <property name="M_SCALE" value="0.001"/>
-  <property name="MESH_SCALE" value="100"/>
-  <property name="F10_HEIGHT" value="0.004"/>
-  <property name="F4_HEIGHT" value="0.0525"/>
-  <property name="F3_HEIGHT" value="0.009"/>
-  <property name="AX12_HEIGHT" value="0.0385"/>
-  <property name="AX12_WIDTH" value="0.038"/>
-  <property name="AX12_DEPTH" value="0.048"/>
-  <property name="F2_HEIGHT" value="0.0265"/>
+  <xacro:property name="M_PI" value="3.14159"/>
+  <xacro:property name="M_SCALE" value="0.001"/>
+  <xacro:property name="MESH_SCALE" value="100"/>
+  <xacro:property name="F10_HEIGHT" value="0.004"/>
+  <xacro:property name="F4_HEIGHT" value="0.0525"/>
+  <xacro:property name="F3_HEIGHT" value="0.009"/>
+  <xacro:property name="AX12_HEIGHT" value="0.0385"/>
+  <xacro:property name="AX12_WIDTH" value="0.038"/>
+  <xacro:property name="AX12_DEPTH" value="0.048"/>
+  <xacro:property name="F2_HEIGHT" value="0.0265"/>
 
-  <macro name="bioloid_F10_fixed" params="parent name color *origin">
+  <xacro:macro name="bioloid_F10_fixed" params="parent name color *origin">
     <joint name="${name}_joint" type="fixed">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="${name}_link" />
     </joint>
@@ -43,11 +43,11 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="finger_fixed" params="parent name color *origin">
+  <xacro:macro name="finger_fixed" params="parent name color *origin">
     <joint name="${name}_joint" type="fixed">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="${name}_link" />
     </joint>
@@ -76,11 +76,11 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="bioloid_F3_fixed" params="parent name color *origin">
+  <xacro:macro name="bioloid_F3_fixed" params="parent name color *origin">
     <joint name="${name}_joint" type="fixed">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="${name}_link" />
     </joint>
@@ -109,11 +109,11 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="dynamixel_AX12_fixed" params="parent name *origin">
+  <xacro:macro name="dynamixel_AX12_fixed" params="parent name *origin">
     <joint name="${name}_joint" type="fixed">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="${name}_link" />
     </joint>
@@ -142,11 +142,11 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="bioloid_F3_revolute" params="parent name color llimit ulimit vlimit *origin">
+  <xacro:macro name="bioloid_F3_revolute" params="parent name color llimit ulimit vlimit *origin">
     <joint name="${name}_joint" type="revolute">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <axis xyz="0 0 -1"/>
       <limit effort="30" velocity="${vlimit}" lower="${llimit}" upper="${ulimit}" />
       <parent link="${parent}"/>
@@ -177,11 +177,11 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="bioloid_F2_revolute" params="parent name color llimit ulimit vlimit *origin">
+  <xacro:macro name="bioloid_F2_revolute" params="parent name color llimit ulimit vlimit *origin">
     <joint name="${name}_joint" type="revolute">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <axis xyz="0 1 0"/>
       <limit effort="30" velocity="${vlimit}" lower="${llimit}" upper="${ulimit}" />
       <parent link="${parent}"/>
@@ -212,11 +212,11 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="bioloid_F4_revolute" params="parent name color llimit ulimit vlimit *origin">
+  <xacro:macro name="bioloid_F4_revolute" params="parent name color llimit ulimit vlimit *origin">
     <joint name="${name}_joint" type="revolute">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <axis xyz="0 1 0"/>
       <limit effort="30" velocity="${vlimit}" lower="${llimit}" upper="${ulimit}" />
       <parent link="${parent}"/>
@@ -247,6 +247,6 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
 </robot>

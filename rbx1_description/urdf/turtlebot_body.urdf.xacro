@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <robot name="turtlebot_body" xmlns:xacro="http://ros.org/wiki/xacro">
-  <property name="M_PI" value="3.14159"/>
-  <property name="MESH_SCALE" value="100"/>
+  <xacro:property name="M_PI" value="3.14159"/>
+  <xacro:property name="MESH_SCALE" value="100"/>
 
   <!-- Macro for TurtleBot body. Including Gazebo extensions, but does not include Kinect -->
   <xacro:include filename="$(find rbx1_description)/urdf/gazebo.urdf.xacro"/>
 
-  <property name="base_x" value="0.33" />
-  <property name="base_y" value="0.33" />
+  <xacro:property name="base_x" value="0.33" />
+  <xacro:property name="base_y" value="0.33" />
 
   <xacro:macro name="turtlebot_body">
     <material name="Green">

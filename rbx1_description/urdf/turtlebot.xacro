@@ -14,13 +14,13 @@
     <color rgba="0.8 0.8 0.8 0.9"/>
   </material>
 
-  <property name="M_PI" value="3.14159"/>
-  <property name="SCALE" value="0.0254"/>
-  <property name="MESH_SCALE" value="100"/>
-  <property name="base_x" value="0.33" />
-  <property name="base_y" value="0.33" />
+  <xacro:property name="M_PI" value="3.14159"/>
+  <xacro:property name="SCALE" value="0.0254"/>
+  <xacro:property name="MESH_SCALE" value="100"/>
+  <xacro:property name="base_x" value="0.33" />
+  <xacro:property name="base_y" value="0.33" />
 
-  <macro name="turtlebot">
+  <xacro:macro name="turtlebot">
   <!-- base_footprint is a fictitious link(frame) that is on the ground right below base_link origin, navigation stack depends on this frame -->
 
   <link name="base_footprint">
@@ -571,5 +571,5 @@
       </geometry>
     </collision>
   </link>
-  </macro>
+  </xacro:macro>
 </robot>

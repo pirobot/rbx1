@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <robot>
-  <property name="M_PI" value="3.14159"/>
-  <property name="M_SCALE" value="0.001"/>
+  <xacro:property name="M_PI" value="3.14159"/>
+  <xacro:property name="M_SCALE" value="0.001"/>
 
-  <macro name="turtlebot_spacer" params="parent number x_loc y_loc z_loc">
+  <xacro:macro name="turtlebot_spacer" params="parent number x_loc y_loc z_loc">
     <joint name="spacer_${number}_joint" type="fixed">
       <origin xyz="${x_loc} ${y_loc} ${z_loc}" rpy="0 0 0" />
       <parent link="${parent}"/>
@@ -33,9 +33,9 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="turtlebot_standoff_1in" params="parent number x_loc y_loc z_loc">
+  <xacro:macro name="turtlebot_standoff_1in" params="parent number x_loc y_loc z_loc">
     <joint name="standoff_1in_${number}_joint" type="fixed">
       <origin xyz="${x_loc} ${y_loc} ${z_loc}" rpy="0 0 0" />
       <parent link="${parent}"/>
@@ -65,9 +65,9 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="turtlebot_standoff_2in" params="parent number x_loc y_loc z_loc">
+  <xacro:macro name="turtlebot_standoff_2in" params="parent number x_loc y_loc z_loc">
     <joint name="standoff_2in_${number}_joint" type="fixed">
       <origin xyz="${x_loc} ${y_loc} ${z_loc}" rpy="0 0 0" />
       <parent link="${parent}"/>
@@ -97,9 +97,9 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
   
-  <macro name="turtlebot_standoff_3in" params="parent number x_loc y_loc z_loc">
+  <xacro:macro name="turtlebot_standoff_3in" params="parent number x_loc y_loc z_loc">
     <joint name="standoff_3in_${number}_joint" type="fixed">
       <origin xyz="${x_loc} ${y_loc} ${z_loc}" rpy="0 0 0" />
       <parent link="${parent}"/>
@@ -129,10 +129,10 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
 
-  <macro name="turtlebot_standoff_8in" params="parent number x_loc y_loc z_loc">
+  <xacro:macro name="turtlebot_standoff_8in" params="parent number x_loc y_loc z_loc">
     <joint name="standoff_8in_${number}_joint" type="fixed">
       <origin xyz="${x_loc} ${y_loc} ${z_loc}" rpy="0 0 0" />
       <parent link="${parent}"/>
@@ -162,6 +162,6 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
 </robot>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="turtlebot_hardware" xmlns:xacro="http://ros.org/wiki/xacro">
-  <property name="M_PI" value="3.14159"/>
-  <property name="M_SCALE" value="0.001"/>
+  <xacro:property name="M_PI" value="3.14159"/>
+  <xacro:property name="M_SCALE" value="0.001"/>
 
   <xacro:macro name="turtlebot_spacer" params="parent number x_loc y_loc z_loc">
     <joint name="spacer_${number}_joint" type="fixed">

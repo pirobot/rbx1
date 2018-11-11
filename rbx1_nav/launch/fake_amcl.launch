@@ -15,7 +15,7 @@
   <node pkg="fake_localization" type="fake_localization" name="fake_localization" clear_params="true" output="screen">
      <remap from="base_pose_ground_truth" to="odom" />
      <param name="global_frame_id" value="map" />
-     <param name="base_frame_id" value="base_footprint" />
+     <param name="base_frame_id" value="base_link" />
   </node>
 
 </launch>

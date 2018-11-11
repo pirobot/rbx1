@@ -41,8 +41,7 @@ class TalkBack:
         # Create the sound client object
         self.soundhandle = SoundClient()
         
-        # Wait a moment to let the client connect to the
-        # sound_play server
+        # Wait a moment to let the client connect to the sound_play server
         rospy.sleep(1)
         
         # Make sure any lingering sound_play processes are stopped.

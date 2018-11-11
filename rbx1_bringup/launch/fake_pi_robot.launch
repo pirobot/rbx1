@@ -2,7 +2,7 @@
   <param name="/use_sim_time" value="false" />
 
   <!-- Load the URDF/Xacro model of our robot -->
-  <arg name="urdf_file" default="$(find xacro)/xacro.py '$(find rbx1_description)/urdf/pi_robot.xacro'" />
+  <arg name="urdf_file" default="$(find xacro)/xacro --inorder '$(find rbx1_description)/urdf/pi_robot.xacro'" />
 
   <param name="robot_description" command="$(arg urdf_file)" />
     

@@ -239,7 +239,7 @@ class ROS2OpenCV2(object):
             cv2.putText(self.display_image, "CPS: " + str(self.cps), (10, vstart), font_face, font_scale, (255, 255, 0))
             cv2.putText(self.display_image, "RES: " + str(self.frame_size[0]) + "X" + str(self.frame_size[1]), (10, voffset), font_face, font_scale, (255, 255, 0))
                
-    def show_image(self, window_name, display_image):
+    def imshow_image(self, window_name, display_image):
         # Update the image display
         if self.show_image:
             cv2.imshow(window_name, display_image)
@@ -398,7 +398,7 @@ def main(args):
         ros2opencv = ROS2OpenCV2(node_name)
         while not rospy.is_shutdown():
             if ros2opencv.display_image is not None:
-                ros2opencv.show_image(ros2opencv.cv_window_name, ros2opencv.display_image)
+                ros2opencv.imshow_image(ros2opencv.cv_window_name, ros2opencv.display_image)
 
     except KeyboardInterrupt:
         print "Shutting down ros2opencv node."

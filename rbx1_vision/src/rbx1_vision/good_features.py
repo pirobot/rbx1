@@ -22,7 +22,6 @@
 
 import rospy
 import cv2
-import cv2 as cv
 from rbx1_vision.ros2opencv2 import ROS2OpenCV2
 import numpy as np
 
@@ -75,7 +74,7 @@ class GoodFeatures(ROS2OpenCV2):
             # If we have points, display them
             if keypoints is not None and len(keypoints) > 0:
                 for x, y in keypoints:
-                    cv2.circle(self.marker_image, (x, y), self.feature_size, (0, 255, 0, 0), cv.FILLED, 8, 0)
+                    cv2.circle(self.marker_image, (x, y), self.feature_size, (0, 255, 0, 0), cv2.FILLED, 8, 0)
             
             # Process any special keyboard commands
             if self.keystroke != -1:
@@ -121,8 +120,8 @@ if __name__ == '__main__':
         
         while not rospy.is_shutdown():
             if goodfeatures.display_image is not None:
-                goodfeatures.show_image(goodfeatures.cv_window_name, goodfeatures.display_image)
+                goodfeatures.imshow_image(goodfeatures.cv_window_name, goodfeatures.display_image)
                 
     except KeyboardInterrupt:
         print "Shutting down the Good Features node."
-        cv.DestroyAllWindows()
+        cv2.DestroyAllWindows()

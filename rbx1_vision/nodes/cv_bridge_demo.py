@@ -25,7 +25,6 @@
 import rospy
 import sys
 import cv2
-import cv2 as cv
 from sensor_msgs.msg import Image, CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
@@ -44,14 +43,14 @@ class cvBridgeDemo():
         
         # Create the OpenCV display window for the RGB image
         self.rgb_window_name = self.node_name
-        cv.namedWindow(self.rgb_window_name, cv.WINDOW_NORMAL)
-        cv.moveWindow(self.rgb_window_name, 25, 75)
+        cv2.namedWindow(self.rgb_window_name, cv2.WINDOW_NORMAL)
+        cv2.moveWindow(self.rgb_window_name, 25, 75)
                 
         # And one for the depth image
         self.depth_window_name = "Depth Image"
 
-        cv.namedWindow(self.depth_window_name, cv.WINDOW_NORMAL)
-        cv.moveWindow(self.depth_window_name, 25, 350)
+        cv2.namedWindow(self.depth_window_name, cv2.WINDOW_NORMAL)
+        cv2.moveWindow(self.depth_window_name, 25, 350)
         
         # Create the cv_bridge object
         self.bridge = CvBridge()
@@ -87,10 +86,6 @@ class cvBridgeDemo():
             frame = self.bridge.imgmsg_to_cv2(ros_image, "bgr8")
         except CvBridgeError, e:
             print e
-                    
-        # Convert the image to a numpy array since most cv2 functions
-        # require numpy arrays.
-        frame = np.array(frame, dtype=np.uint8)
         
         # Process the frame using the process_image() function
         self.rgb_image = self.process_image(frame)        
@@ -103,20 +98,17 @@ class cvBridgeDemo():
             depth_image = self.bridge.imgmsg_to_cv2(ros_image, "passthrough")
         except CvBridgeError, e:
             print e
-
-        # Convert the depth image to a Numpy array since most cv2 functions require Numpy arrays.
-        depth_array = np.array(depth_image, dtype=np.float32)
                 
         # Normalize the depth image to fall between 0 (black) and 1 (white)
-        cv2.normalize(depth_array, depth_array, 0, 1, cv2.NORM_MINMAX)
+        depth_image = cv2.normalize(depth_image, depth_image, 0, 1, cv2.NORM_MINMAX, dtype=cv2.CV_32FC1)
         
         # Process the depth image
-        self.depth_image = self.process_depth_image(depth_array)
+        self.depth_image = self.process_depth_image(depth_image)
 
           
     def process_image(self, frame):
         # Convert to greyscale
-        grey = cv2.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         
         # Blur the image
         grey = cv2.blur(grey, (7, 7))
@@ -140,7 +132,7 @@ def main(args):
         rospy.spin()
     except KeyboardInterrupt:
         print "Shutting down vision node."
-        cv.DestroyAllWindows()
+        cv2.DestroyAllWindows()
 
 if __name__ == '__main__':
     main(sys.argv)

@@ -24,7 +24,6 @@
 
 import rospy
 import cv2
-import cv2 as cv
 import numpy as np
 from math import isnan, isinf
 from rbx1_vision.face_detector import FaceDetector
@@ -160,10 +159,10 @@ class FaceTracker(FaceDetector, LKTracker):
         
         # Display the expanded ROI with a yellow rectangle
         if self.show_add_drop:
-            cv2.rectangle(self.marker_image, pt1, pt2, cv.RGB(255, 255, 0))
+            cv2.rectangle(self.marker_image, pt1, pt2, cv2.RGB(255, 255, 0))
                         
         # Create a filled white ellipse within the track_box to define the ROI
-        cv2.ellipse(mask, mask_box, cv.CV_RGB(255,255, 255), cv.CV_FILLED)
+        cv2.ellipse(mask, mask_box, cv2.CV_RGB(255,255, 255), cv2.CV_FILLED)
         
         if self.keypoints is not None:
             # Mask the current keypoints
@@ -181,7 +180,7 @@ class FaceTracker(FaceDetector, LKTracker):
                     self.keypoints.append((x,y))
                     # Briefly display a blue disc where the new point is added
                     if self.show_add_drop:
-                        cv2.circle(self.marker_image, (x, y), 3, (255, 255, 0, 0), cv.CV_FILLED, 2, 0)
+                        cv2.circle(self.marker_image, (x, y), 3, (255, 255, 0, 0), cv2.CV_FILLED, 2, 0)
                                     
             # Remove duplicate keypoints
             self.keypoints = list(set(self.keypoints))
@@ -269,7 +268,7 @@ class FaceTracker(FaceDetector, LKTracker):
                 keypoints_xy.remove(point)
                 if self.show_add_drop:
                     # Briefly mark the removed points in red
-                    cv2.circle(self.marker_image, (point[0], point[1]), 3, (0, 0, 255), cv.CV_FILLED, 2, 0)   
+                    cv2.circle(self.marker_image, (point[0], point[1]), 3, (0, 0, 255), cv2.CV_FILLED, 2, 0)   
                 try:
                     keypoints_z.remove(point)
                     n_z = n_z - 1
@@ -307,7 +306,7 @@ class FaceTracker(FaceDetector, LKTracker):
                         keypoints_xy.remove(point)
                         if self.show_add_drop:
                             # Briefly mark the removed points in red
-                            cv2.circle(self.marker_image, (point[0], point[1]), 2, (0, 0, 255), cv.CV_FILLED)  
+                            cv2.circle(self.marker_image, (point[0], point[1]), 2, (0, 0, 255), cv2.CV_FILLED)  
                 except:
                     pass
         else:
@@ -327,14 +326,15 @@ if __name__ == '__main__':
     try:
         node_name = "face_tracker"
         face_tracker = FaceTracker(node_name)
-        rospy.spin()
 
-        if self.show_image:
+        if face_tracker.show_image:
             while not rospy.is_shutdown():
                 if face_tracker.display_image is not None:
-                    face_tracker.show_image(face_tracker.cv_window_name, face_tracker.display_image)
+                    face_tracker.imshow_image(face_tracker.cv_window_name, face_tracker.display_image)
+        else:
+            rospy.spin()
                 
     except KeyboardInterrupt:
         print "Shutting down face tracker node."
         if face_tracker.show_image:
-            cv.DestroyAllWindows()
+            cv2.DestroyAllWindows()

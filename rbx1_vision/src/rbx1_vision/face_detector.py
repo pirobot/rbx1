@@ -24,7 +24,6 @@
 
 import rospy
 import cv2
-import cv2 as cv
 from rbx1_vision.ros2opencv2 import ROS2OpenCV2
 
 class FaceDetector(ROS2OpenCV2):
